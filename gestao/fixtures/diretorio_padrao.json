@@ -1,0 +1,9 @@
+[
+    {
+        "model": "gestao.DiretorioAcademico",
+        "pk": 1,
+        "fields": {
+            "nome": "Diretório Padrão"
+        }
+    }
+]

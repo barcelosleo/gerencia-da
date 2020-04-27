@@ -1,0 +1,23 @@
+[
+    {
+        "model": "gestao.Area",
+        "pk": 1,
+        "fields": {
+            "nome": "Direção Administrativa"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 2,
+        "fields": {
+            "nome": "Financeiro"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 3,
+        "fields": {
+            "nome": "Eventos"
+        }
+    }
+]

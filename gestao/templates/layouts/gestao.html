@@ -1,0 +1,54 @@
+{% extends 'layouts/base.html' %}
+
+{% load verifica_url %}
+
+{% block styles %}
+    <style>
+        main, footer {
+            padding-left: 300px;
+        }
+
+        @media only screen and (max-width : 992px) {
+            main, footer {
+                padding-left: 0;
+            }
+        }
+
+        #sidenav-left {
+            top: 64px;
+        }
+    </style>
+{% endblock styles %}
+
+{% block barra_navegacao %}
+    <header>
+        <div class="navbar navbar-fixed">
+            <nav class="nav-wrapper blue darken-4">
+                <a href="{% url 'gestao-administrativo' %}" class="brand-logo">Nome do Diretório</a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    {% for area in areas %}
+                        {% verifica_area nome_url area as esta_na_area %}
+                        <li class="{% if esta_na_area %}active{% endif %}"><a href="{% url area.url %}">{{ area.titulo }}</a></li>
+                    {% endfor %}
+                    <li><a href="{% url 'gestao-logout' %}">Sair</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+{% endblock %}
+
+{% block conteudo %}
+<main>
+    <div class="row">
+        <ul id="sidenav-left" class="sidenav sidenav-fixed indigo lighten-4">
+            {% for ferramenta in area_ferramentas %}
+                <li class="{% if nome_url == ferramenta.url %}active{% endif %}"><a class="waves-effect" href="{% url ferramenta.url %}"><i class="material-icons">{{ ferramenta.icone }}</i>{{ ferramenta.titulo }}</a></li>
+            {% endfor %}
+        </ul>
+
+        <div class="col s9">
+            {% block conteudo_gestao %}{% endblock %}
+        </div>
+    </div>
+</main>
+{% endblock %}

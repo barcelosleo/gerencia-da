@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt">
+  {% load static %}
+  <head>
+    <!-- Title -->
+    <title>
+        {% block title %}Gerência de Diretório Acadêmico{% endblock %}
+    </title>
+
+    <!-- Favicon -->
+    {% comment %} <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/png"> {% endcomment %}
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Arquivos CSS -->
+    <link rel="stylesheet" href="{% static 'materialize/css/materialize.min.css' %}">
+
+    <!-- Bloco de Estilos -->
+    {% block styles %}{% endblock %}
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    {% block barra_navegacao %}{% endblock %}
+
+
+    <!-- Bloco de conteúdo -->
+    {% block conteudo %}{% endblock %}
+
+    <!-- Arquivos necessários para o Bootstrap -->
+    <script src="{% static 'materialize/js/materialize.min.js' %}"></script>
+
+    <!-- Bloco de scripts -->
+    {% block scripts %}{% endblock %}
+
+  </body>
+</html>

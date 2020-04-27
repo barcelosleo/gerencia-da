@@ -1,0 +1,27 @@
+{% extends 'layouts/gestao.html' %}
+
+{% block conteudo_gestao %}
+    <div class="col s12">
+        <div class="row">
+            <h5>Configurações do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            <form class="col s12 offset-s2" action="{% url 'gestao-config-diretorio' %}" method="POST">
+                <div class="input-field row">
+                    <input id="nome-diretorio" type="text" value="{% if diretorio.nome %}{{ diretorio.nome }}{% endif %}" required>
+                    <label for="nome-diretorio">Nome do Diretório Acadêmico</label>
+                </div>
+                <div class="file-field input-field row">
+                    <div class="btn">
+                        <span>Logo</span>
+                        <input type="file">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
+                {% include "forms/form_material.html" %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
