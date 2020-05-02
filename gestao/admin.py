@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import AssociadoCreationForm, AssociadoChangeForm
-from .models import Associado, Area, Gestor
+from .models import Associado, Area
 
 
 class AssociadoAdmin(UserAdmin):
@@ -31,21 +31,8 @@ class AreaAdmin(admin.ModelAdmin):
     fields = ('nome',)
     list_display = ('nome',)
 
-class GestorAdmin(admin.ModelAdmin):
-    fields = ('ano_gestao', 'associado', 'area')
-    list_display = ('ano_gestao', 'nome_associado', 'nome_area')
-
-    def nome_associado(self, obj):
-        return obj.associado.nome
-
-    def nome_area(self, obj):
-        return obj.area.nome
-
-    nome_associado.admin_order_field = 'associado__nome'
-    nome_area.admin_order_field = 'area__nome'
 
 
 admin.site.register(Associado, AssociadoAdmin)
 admin.site.register(Area, AreaAdmin)
-admin.site.register(Gestor, GestorAdmin)
 

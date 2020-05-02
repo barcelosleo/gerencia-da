@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <!-- Arquivos CSS -->
-    <link rel="stylesheet" href="{% static 'materialize/css/materialize.min.css' %}">
+    {% include 'material/includes/material_css.html' %}
 
     <!-- Bloco de Estilos -->
     {% block styles %}{% endblock %}
@@ -28,10 +28,17 @@
     <!-- Bloco de conteúdo -->
     {% block conteudo %}{% endblock %}
 
-    <!-- Arquivos necessários para o Bootstrap -->
-    <script src="{% static 'materialize/js/materialize.min.js' %}"></script>
+    <!-- Arquivos necessários para o Materialize -->
+    <script src="{% static 'js/jquery-3.5.0.min.js' %}"></script>
+    {% include 'material/includes/material_js.html' %}
 
     <!-- Bloco de scripts -->
+    <script>
+      $(document).ready(function(){
+        $('.tooltipped').tooltip();
+        $('.modal').modal();
+      });
+    </script>
     {% block scripts %}{% endblock %}
 
   </body>

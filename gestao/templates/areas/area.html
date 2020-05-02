@@ -1,0 +1,25 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load material_form %}
+
+{% block conteudo_gestao %}
+    <div class="container">
+        <div class="row">
+            <h5>Nova Área Administrativa do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            {% if id %}
+                <form class="col s12" action="{% url 'gestao-areas-nova' %}?id={{ id }}" method="POST">
+            {% else %}
+                <form class="col s12" action="{% url 'gestao-areas-nova' %}" method="POST">
+            {% endif %}
+                {% csrf_token %}
+                {% form form=form %}{% endform %}
+                <div class="row">
+                    <button type="submit" name="_submit" class="btn green">Salvar</button>
+                    <a class="btn light-blue" href="{% url 'gestao-areas' %}">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

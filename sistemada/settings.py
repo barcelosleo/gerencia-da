@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'material',
+    'material.theme.blue',
     'gestao',
     'financeiro',
     'eventos',
@@ -124,8 +126,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    ('materialize', os.path.join(BASE_DIR, "sistemada", "static", "node_modules", "materialize-css", "dist")),
+    os.path.join(BASE_DIR, "sistemada", "static"),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 AUTH_USER_MODEL = 'gestao.Associado'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

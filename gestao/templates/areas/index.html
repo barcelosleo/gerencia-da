@@ -1,0 +1,65 @@
+{% extends 'layouts/gestao.html' %}
+
+
+{% block conteudo_gestao %}
+    <div class="container">
+        <div class="row">
+            <h5>Áreas Administrativas do Diretório Acadêmico</h5>
+        </div>
+        <div class="row right-align">
+            <form method="GET" class="col s6">
+                <div class="row">
+                    <div class="input-field col s10">
+                        <i class="material-icons prefix">search</i>
+                        <input type="text" id="termo-pesquisa" name="termo" value="{% if termo %}{{ termo }}{% endif %}">
+                        <label for="termo-pesquisa">Pesquisar</label>
+                    </div>
+                    <div class="input-field col s2">
+                        <button class="btn waves-effect waves-light tooltipped" data-position="right" data-tooltip="Pesquisar"><i class="material-icons">arrow_forward</i></button>
+                    </div>
+                </div>
+            </form>
+            <div class="col s6">
+                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Nova Área" href="{% url 'gestao-areas-nova' %}"><i class="material-icons">add</i></a>
+            </div>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Área</th>
+                        <th>Gestor</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for area in areas_da %}
+                        <tr>
+                            <td>{{ area.id }}</td>
+                            <td>{{ area.nome }}</td>
+                            <td>{% if area.gestor.nome %}{{ area.gestor.nome }}{% else %}<i>Sem Gestor</i>{% endif %}</td>
+                            <td>
+                                <a class="btn-floating waves-effect waves-light tooltipped gray" data-position="top" data-tooltip="Remover Área" href="{% url 'gestao-areas-nova' %}?id={{ area.id }}&method=DELETE"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Área" href="{% url 'gestao-areas-nova' %}?id={{ area.id }}"><i class="material-icons">edit</i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% if areas_da.has_other_pages %}
+                <ul class="pagination">
+                    <li class="waves-effect {% if not areas_da.has_previous %}disabled{% endif %}"><a href="{% if areas_da.has_previous %}?page={{ areas_da.previous_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_left</i></a></li>
+                    {% for i in areas_da.paginator.page_range %}
+                        <li class="waves-effect {% if areas_da.number == i %}active{% endif %}"><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+
+                    <li class="waves-effect {% if not areas_da.has_next %}disabled{% endif %}"><a href="{% if areas_da.has_next %}?page={{ areas_da.next_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_right</i></a></li>
+
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

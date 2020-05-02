@@ -1,6 +1,7 @@
 {% extends 'layouts/base.html' %}
 
 {% load verifica_url %}
+{% load static%}
 
 {% block styles %}
     <style>
@@ -17,6 +18,10 @@
         #sidenav-left {
             top: 64px;
         }
+
+        .navbar .nav-wrapper .brand-logo img {
+            height: 64px;
+        }
     </style>
 {% endblock styles %}
 
@@ -24,7 +29,9 @@
     <header>
         <div class="navbar navbar-fixed">
             <nav class="nav-wrapper blue darken-4">
-                <a href="{% url 'gestao-administrativo' %}" class="brand-logo">Nome do Diretório</a>
+                <a href="{% url 'gestao-administrativo' %}" class="brand-logo">
+                    <img id="logo" src="{{ request.session.logo_diretorio }}" alt="{{ request.session.sigla_diretorio }}">
+                </a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     {% for area in areas %}
                         {% verifica_area nome_url area as esta_na_area %}
@@ -42,11 +49,12 @@
     <div class="row">
         <ul id="sidenav-left" class="sidenav sidenav-fixed indigo lighten-4">
             {% for ferramenta in area_ferramentas %}
-                <li class="{% if nome_url == ferramenta.url %}active{% endif %}"><a class="waves-effect" href="{% url ferramenta.url %}"><i class="material-icons">{{ ferramenta.icone }}</i>{{ ferramenta.titulo }}</a></li>
+                {% verifica_area_subferramenta nome_url ferramenta as esta_na_ferramenta %}
+                <li class="{% if esta_na_ferramenta %}active{% endif %}"><a class="waves-effect" href="{% url ferramenta.url %}"><i class="material-icons">{{ ferramenta.icone }}</i>{{ ferramenta.titulo }}</a></li>
             {% endfor %}
         </ul>
 
-        <div class="col s9">
+        <div class="col s12">
             {% block conteudo_gestao %}{% endblock %}
         </div>
     </div>

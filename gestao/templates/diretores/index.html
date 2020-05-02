@@ -1,0 +1,69 @@
+{% extends 'layouts/gestao.html' %}
+
+{% block conteudo_gestao %}
+    <div class="container">
+        <div class="row">
+            <h5>Diretores do Diretório Acadêmico</h5>
+        </div>
+        <div class="row right-align">
+            <form method="GET" class="col s6">
+                <div class="row">
+                    <div class="input-field col s10">
+                        <i class="material-icons prefix">search</i>
+                        <input type="text" id="termo-pesquisa" name="termo" value="{% if termo %}{{ termo }}{% endif %}">
+                        <label for="termo-pesquisa">Pesquisar</label>
+                    </div>
+                    <div class="input-field col s2">
+                        <button class="btn waves-effect waves-light tooltipped" data-position="right" data-tooltip="Pesquisar"><i class="material-icons">arrow_forward</i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>Matrícula</th>
+                        <th>Cargos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for diretor in diretores %}
+                        <tr>
+                            <td>{{ diretor.id }}</td>
+                            <td>{{ diretor.nome }}</td>
+                            <td>{{ diretor.matricula }}</td>
+                            <td>
+                                {% for cargo in diretor.cargos.all %}
+                                    <div class="row"><span class="new badge orange" data-badge-caption="">{{ cargo.nome }}</span></div>
+                                {% empty %}
+                                    <i>Sem Cargos</i>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a class="btn-floating waves-effect waves-light tooltipped gray" data-position="top" data-tooltip="Desvincular Diretor" href="{% url 'gestao-diretores-cargos' id=diretor.id %}?method=DELETE"><i class="material-icons">content_cut</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Cargos" href="{% url 'gestao-diretores-cargos' id=diretor.id %}"><i class="material-icons">contacts</i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% if diretores.has_other_pages %}
+                <ul class="pagination">
+                    <li class="waves-effect {% if not diretores.has_previous %}disabled{% endif %}"><a href="{% if diretores.has_previous %}?page={{ diretores.previous_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_left</i></a></li>
+                    {% for i in diretores.paginator.page_range %}
+                        <li class="waves-effect {% if diretores.number == i %}active{% endif %}"><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+
+                    <li class="waves-effect {% if not diretores.has_next %}disabled{% endif %}"><a href="{% if diretores.has_next %}?page={{ diretores.next_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_right</i></a></li>
+
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
