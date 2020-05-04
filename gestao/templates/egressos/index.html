@@ -31,7 +31,7 @@
                 </div>
             </form>
             <div class="col s6">
-                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Associado" href="{% url 'gestao-associados-novo' %}"><i class="material-icons">add</i></a>
+                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Associado" href="{% url 'gestao-egressos-novo' %}"><i class="material-icons">add</i></a>
             </div>
         </div>
         <div class="row">
@@ -40,11 +40,9 @@
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
-                        <th>Matrícula</th>
+                        <th>Ano Conclusão</th>
                         <th>Email</th>
                         <th>Telefone</th>
-                        <th>Diretor</th>
-                        <th>Aluno Ativo</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -53,21 +51,19 @@
                         <tr>
                             <td>{{ associado.id }}</td>
                             <td>{{ associado.nome }} {{ associado.sobrenome }}</td>
-                            <td>{{ associado.matricula }}</td>
+                            <td>{{ associado.previsao_conclusao }}</td>
                             <td>{{ associado.email }}</td>
                             <td>{% if associado.telefone %}{{ associado.telefone }}{% else %}<span class="new badge red" data-badge-caption="">Sem telefone</span>{% endif %}</td>
-                            <td>{% if associado.is_staff %}<i class="small material-icons">check_circle</i>{% else %}<i class="small material-icons">cancel</i>{% endif %}</td>
-                            <td>{% if associado.is_active %}<i class="small material-icons">check_circle</i>{% else %}<i class="small material-icons">cancel</i>{% endif %}</td>
                             <td>
-                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover associado" href="#confirmar-exclusao" data-modal-confirm-url="{% url 'gestao-associados-novo' %}?id={{ associado.id }}&method=DELETE"><i class="material-icons">delete</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Associado" href="{% url 'gestao-associados-novo' %}?id={{ associado.id }}"><i class="material-icons">edit</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover associado" href="#confirmar-exclusao" data-modal-confirm-url="{% url 'gestao-egressos-novo' %}?id={{ associado.id }}&method=DELETE"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Associado" href="{% url 'gestao-egressos-novo' %}?id={{ associado.id }}"><i class="material-icons">edit</i></a>
                             </td>
                         </tr>
                     {% empty %}
                         <tr>
                             <td colspan="8">
                                 <div class="center-align">
-                                    <i>Nenhum Associado</i>
+                                    <i>Nenhum egresso</i>
                                 </div>
                             </td>
                         </tr>

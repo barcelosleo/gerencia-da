@@ -30,6 +30,7 @@
 
     <!-- Arquivos necessários para o Materialize -->
     <script src="{% static 'js/jquery-3.5.0.min.js' %}"></script>
+    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
     {% include 'material/includes/material_js.html' %}
 
     <!-- Bloco de scripts -->
@@ -37,6 +38,18 @@
       $(document).ready(function(){
         $('.tooltipped').tooltip();
         $('.modal').modal();
+        $('.mascara-telefone').mask('(00) 0000-00009').focusout(function(event) {
+          var target, phone, element;
+          target = (event.currentTarget) ? event.currentTarget : event.srcElement;
+          phone = target.value.replace(/\D/g, '');
+          element = $(target);
+          element.unmask();
+          if(phone.length > 10) {
+            element.mask('(00) 00000-0000')
+          } else {
+            element.mask('(00) 0000-0000')
+          }
+        })
       });
     </script>
     {% block scripts %}{% endblock %}

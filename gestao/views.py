@@ -1,4 +1,5 @@
 import datetime
+import random
 from django.http import HttpResponse
 from django.views import View
 from django.shortcuts import render, redirect, reverse
@@ -11,7 +12,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 
 from gestao.models import DiretorioAcademico, Area, Associado, Cargo
-from gestao.forms import DiretorioAcademicoForm, AreaForm, CargoForm, DiretorCargoForm, AssociadoForm
+from gestao.forms import DiretorioAcademicoForm, AreaForm, CargoForm, DiretorCargoForm, AssociadoForm, EgressoForm
 import gestao.utilidades as utilidades
 
 areas = [
@@ -27,8 +28,14 @@ areas = [
         utilidades.Ferramenta('Diretores', 'gestao-diretores', 'people', [
             utilidades.SubFerramenta('gestao-diretores-cargos'),
         ]),
-        utilidades.Ferramenta('Associados', 'gestao-associados', 'people_outline')
+        utilidades.Ferramenta('Associados', 'gestao-associados', 'people_outline', [
+            utilidades.SubFerramenta('gestao-associados-novo'),
+        ]),
+        utilidades.Ferramenta('Egressos', 'gestao-egressos', 'check', [
+            utilidades.SubFerramenta('gestao-egressos-novo'),
+        ])
     ]),
+    utilidades.Area('Comunicação', 'gestao-eventos', []),
     utilidades.Area('Financeiro', 'gestao-financeira', []),
     utilidades.Area('Eventos', 'gestao-eventos', []),
 ]
@@ -422,14 +429,19 @@ class AssociadosView(View):
 
         if termo_pesquisa:
             associados = Associado.objects.filter(
-                Q(nome__startswith=termo_pesquisa) |
-                Q(sobrenome__startswith=termo_pesquisa) |
-                Q(email__startswith=termo_pesquisa) |
-                Q(telefone__startswith=termo_pesquisa) |
-                Q(matricula__startswith=termo_pesquisa)
+                Q(is_active=True) &
+                (
+                    Q(nome__startswith=termo_pesquisa) |
+                    Q(sobrenome__startswith=termo_pesquisa) |
+                    Q(email__startswith=termo_pesquisa) |
+                    Q(telefone__startswith=termo_pesquisa) |
+                    Q(matricula__startswith=termo_pesquisa)
+                )
             )
         else:
-            associados = Associado.objects.all()
+            associados = Associado.objects.filter(
+                is_active=True
+            )
 
         paginator = Paginator(associados, 5)
 
@@ -484,9 +496,9 @@ class AssociadoView(View):
         id = request.GET.get('id', None)
         if id:
             associado = Associado.objects.get(pk=id)
-            form = AssociadoForm(request.POST, instance=associado)
+            form = AssociadoForm(request.POST, request.FILES, instance=associado)
         else:
-            form = AssociadoForm(request.POST)
+            form = AssociadoForm(request.POST, request.FILES)
 
         if form.is_valid():
             form.save()
@@ -501,6 +513,62 @@ class AssociadoView(View):
         }
         return render(request, self.template_name, context)
 
+    def delete(self, request, *args, **kwargs):
+        id = request.GET.get('id', None)
+        if id:
+            Associado.objects.filter(pk=id).delete()
+
+        return redirect(reverse('gestao-associados'))
+
+    @method_decorator(login_required(login_url="/gestao/login"))
+    def dispatch(self, *args, **kwargs):
+        if self.request.GET.get('method', None) == 'DELETE':
+            return self.delete(self.request, *args, **kwargs)
+        return super().dispatch(*args, **kwargs)
+
+class EgressosView(View):
+    template_name = 'egressos/index.html'
+
+    def get(self, request, *args, **kwargs):
+        termo_pesquisa = request.GET.get('termo', None)
+
+        if termo_pesquisa:
+            associados = Associado.objects.filter(
+                Q(is_active=False) &
+                (
+                    Q(nome__startswith=termo_pesquisa) |
+                    Q(sobrenome__startswith=termo_pesquisa) |
+                    Q(email__startswith=termo_pesquisa) |
+                    Q(telefone__startswith=termo_pesquisa) |
+                    Q(matricula__startswith=termo_pesquisa)
+                )
+            )
+        else:
+            associados = Associado.objects.filter(
+                is_active=False
+            )
+
+        paginator = Paginator(associados, 5)
+
+        page = request.GET.get('page', 1)
+
+        try:
+            associados = paginator.page(page)
+        except PageNotAnInteger:
+            associados = paginator.page(1)
+        except EmptyPage:
+            associados = paginator.page(paginator.num_pages)
+
+        context = {
+            'areas': areas,
+            'area_ferramentas': areas[0].ferramentas,
+            'nome_url': resolve(request.path_info).url_name,
+            'associados': associados,
+            'termo': termo_pesquisa,
+        }
+
+        return render(request, self.template_name, context)
+
     @method_decorator(login_required(login_url="/gestao/login"))
     def dispatch(self, *args, **kwargs):
         # if self.request.GET.get('method', None) == 'DELETE':
@@ -509,6 +577,69 @@ class AssociadoView(View):
         #     return self.delete(self.request, id, *args, **kwargs)
         return super().dispatch(*args, **kwargs)
 
+class EgressoView(View):
+    template_name = 'egressos/egresso.html'
+
+    def get(self, request, *args, **kwargs):
+        id = request.GET.get('id', None)
+        if id:
+            associado = Associado.objects.get(pk=id)
+            form = EgressoForm(instance=associado)
+        else:
+            form = EgressoForm()
+
+        context = {
+            'areas': areas,
+            'area_ferramentas': areas[0].ferramentas,
+            'nome_url': resolve(request.path_info).url_name,
+            'form': form,
+            'id': id,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        id = request.GET.get('id', None)
+        if id:
+            associado = Associado.objects.get(pk=id)
+            form = EgressoForm(request.POST, request.FILES, instance=associado)
+        else:
+            random.seed(datetime.datetime.now())
+
+            form = EgressoForm(request.POST, request.FILES)
+
+
+        if form.is_valid():
+            matricula_randomica = str(int(random.random() * 1e17))
+
+            egresso = form.save(commit=False)
+            egresso.matricula = 'EGR' + matricula_randomica + "".join(random.sample(egresso.nome.strip(), 3)).upper()
+            egresso.is_staff = False
+            egresso.is_active = False
+            egresso.save()
+            return redirect(reverse('gestao-egressos'))
+
+
+        context = {
+            'areas': areas,
+            'area_ferramentas': areas[0].ferramentas,
+            'nome_url': resolve(request.path_info).url_name,
+            'form': form,
+            'id': id,
+        }
+        return render(request, self.template_name, context)
+
+    def delete(self, request, *args, **kwargs):
+        id = request.GET.get('id', None)
+        if id:
+            Associado.objects.filter(pk=id).delete()
+
+        return redirect(reverse('gestao-egressos'))
+
+    @method_decorator(login_required(login_url="/gestao/login"))
+    def dispatch(self, *args, **kwargs):
+        if self.request.GET.get('method', None) == 'DELETE':
+            return self.delete(self.request, *args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
 class EventosView(View):
     template_name = 'eventos.html'
