@@ -18,24 +18,30 @@ class Area():
 areas = [
     Area('Direção Admnistrativa', 'gestao-administrativo', [
         Ferramenta('Início', 'gestao-administrativo', 'home'),
-        Ferramenta('Config. Diretório', 'gestao-config-diretorio', 'settings'),
-        Ferramenta('Áreas', 'gestao-areas', 'view_carousel', [
-            SubFerramenta('gestao-areas-nova')
-        ]),
-        Ferramenta('Cargos', 'gestao-cargos', 'contacts', [
-            SubFerramenta('gestao-cargos-novo'),
-        ]),
-        Ferramenta('Diretores', 'gestao-diretores', 'people', [
-            SubFerramenta('gestao-diretores-cargos'),
+        Ferramenta('Atas de Reunião', 'gestao-reunioes', 'book', [
+            SubFerramenta('gestao-reunioes-nova'),
         ]),
         Ferramenta('Associados', 'gestao-associados', 'people_outline', [
             SubFerramenta('gestao-associados-novo'),
         ]),
         Ferramenta('Egressos', 'gestao-egressos', 'check', [
             SubFerramenta('gestao-egressos-novo'),
-        ])
+        ]),
+        # Ferramenta('Interessados no Curso', 'gestao-egressos', 'child_friendly', [
+        #     SubFerramenta('gestao-egressos-novo'),
+        # ]),
+        Ferramenta('Diretores', 'gestao-diretores', 'people', [
+            SubFerramenta('gestao-diretores-cargos'),
+        ]),
+        Ferramenta('Cargos', 'gestao-cargos', 'contacts', [
+            SubFerramenta('gestao-cargos-novo'),
+        ]),
+        Ferramenta('Áreas', 'gestao-areas', 'view_carousel', [
+            SubFerramenta('gestao-areas-nova')
+        ]),
+        Ferramenta('Config. Diretório', 'gestao-config-diretorio', 'settings'),
     ]),
-    Area('Comunicação', 'gestao-eventos', []),
-    Area('Financeiro', 'gestao-financeira', []),
-    Area('Eventos', 'gestao-eventos', []),
+    Area('Comunicação', 'gestao-logout', []),
+    Area('Financeiro', 'gestao-logout', []),
+    Area('Eventos', 'gestao-logout', []),
 ]

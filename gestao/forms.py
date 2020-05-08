@@ -1,8 +1,9 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
+from django.db.models import Q
 import material
 
-from .models import Associado, DiretorioAcademico, Area, Cargo
+from . import models
 
 class ModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -13,43 +14,40 @@ class MultipleModelChoiceField(forms.ModelMultipleChoiceField):
         return f"{obj.nome}"
 
 class AssociadoCreationForm(UserCreationForm):
-
     class Meta(UserCreationForm):
-        model = Associado
+        model = models.Associado
         fields = ('matricula', 'email',)
 
 
 class AssociadoChangeForm(UserChangeForm):
-
     class Meta:
-        model = Associado
+        model = models.Associado
         fields = ('matricula', 'email',)
 
 class DiretorioAcademicoForm(forms.ModelForm):
     class Meta:
-        model = DiretorioAcademico
+        model = models.DiretorioAcademico
         fields = ("nome", "sigla", "logo", )
 
 class AreaForm(forms.ModelForm):
-
-    gestor = ModelChoiceField(queryset=Associado.objects.filter(is_staff=True), empty_label="Sem Gestor", required=False)
+    gestor = ModelChoiceField(queryset=models.Associado.objects.filter(Q(is_staff=True) & Q(is_active=True)), empty_label="Sem Gestor", required=False)
     class Meta:
-        model = Area
+        model = models.Area
         fields = ("nome",)
 
 class CargoForm(forms.ModelForm):
-    associados = MultipleModelChoiceField(queryset=Associado.objects.filter(is_staff=True), required=False)
-    area = ModelChoiceField(queryset=Area.objects.all())
+    associados = MultipleModelChoiceField(queryset=models.Associado.objects.filter(Q(is_staff=True) & Q(is_active=True)), required=False)
+    area = ModelChoiceField(queryset=models.Area.objects.all())
 
     class Meta:
-        model = Cargo
+        model = models.Cargo
         fields = ("nome", "area", "associados", )
 
 class DiretorCargoForm(forms.ModelForm):
-    cargos = MultipleModelChoiceField(queryset=Cargo.objects.all(), required=False)
+    cargos = MultipleModelChoiceField(queryset=models.Cargo.objects.all(), required=False)
 
     class Meta:
-        model = Associado
+        model = models.Associado
         fields = ("cargos", )
 
 class AssociadoForm(forms.ModelForm):
@@ -69,7 +67,7 @@ class AssociadoForm(forms.ModelForm):
     telefone = forms.CharField(widget=forms.TextInput(attrs={'class': 'mascara-telefone'}), required=False)
 
     class Meta:
-        model = Associado
+        model = models.Associado
         fields = (
             "nome",
             "sobrenome",
@@ -97,7 +95,7 @@ class EgressoForm(forms.ModelForm):
     telefone = forms.CharField(widget=forms.TextInput(attrs={'class': 'mascara-telefone'}), required=False)
 
     class Meta:
-        model = Associado
+        model = models.Associado
         fields = (
             "nome",
             "sobrenome",
@@ -106,3 +104,12 @@ class EgressoForm(forms.ModelForm):
             "previsao_conclusao",
             "telefone",
         )
+
+class ReuniaoForm(forms.ModelForm):
+    ata = forms.CharField(label="", widget=forms.Textarea(attrs={'class': 'editor'}))
+    data = forms.DateField(label="Data da Reunião", widget=forms.DateInput(format='%d/%m/%Y'), input_formats=('%d/%m/%Y', ))
+    presentes = MultipleModelChoiceField(queryset=models.Associado.objects.filter(is_active=True))
+
+    class Meta:
+        model = models.Reuniao
+        fields = ("data", "titulo", "ata", "presentes")

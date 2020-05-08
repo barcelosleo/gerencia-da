@@ -1,0 +1,123 @@
+{% extends 'layouts/gestao.html' %}
+
+{% block conteudo_gestao %}
+      <!-- Modal Structure -->
+    <div id="ata-reuniao" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 id="titulo-ata"></h4>
+            <hr>
+            <div class="col s12">
+                <div id="conteudo-ata"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
+        </div>
+    </div>
+    <div class="col s12">
+        <div class="row">
+            <h5>Atas de Reunião do Diretório</h5>
+        </div>
+        <div class="row right-align">
+            <form method="GET" class="col s6">
+                <div class="row">
+                    <div class="input-field col s10">
+                        <i class="material-icons prefix">search</i>
+                        <input type="text" id="termo-pesquisa" name="termo" value="{% if termo %}{{ termo }}{% endif %}">
+                        <label for="termo-pesquisa">Pesquisar</label>
+                    </div>
+                    <div class="input-field col s2">
+                        <button class="btn waves-effect waves-light tooltipped" data-position="right" data-tooltip="Pesquisar"><i class="material-icons">arrow_forward</i></button>
+                    </div>
+                </div>
+            </form>
+            <div class="col s6">
+                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Nova Ata" href="{% url 'gestao-reunioes-nova' %}"><i class="material-icons">add</i></a>
+            </div>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Data</th>
+                        <th>Título</th>
+                        <th>Presentes</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ata in atas %}
+                        <tr>
+                            <td>{{ ata.id }}</td>
+                            <td>{{ ata.data|date:'d/m/Y' }}</td>
+                            <td>{{ ata.titulo }}</td>
+                            <td>
+                                    {% for associado in ata.presentes.all %}
+                                        <span class="new badge blue" data-badge-caption="">{{ associado.nome }}</span>
+                                    {% empty %}
+                                        <i>Sem Presentes</i>
+                                    {% endfor %}
+                            </td>
+                            <td>
+                                <a class="btn-floating waves-effect waves-light tooltipped purple modal-trigger" data-position="top" data-tooltip="Ver Ata" data-url="{% url 'gestao-reunioes-nova' %}?id={{ ata.id }}&method=SEE" href="#ata-reuniao"><i class="material-icons">remove_red_eye</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped gray" data-position="top" data-tooltip="Remover Ata" href="{% url 'gestao-reunioes-nova' %}?id={{ ata.id }}&method=DELETE"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Ata" href="{% url 'gestao-reunioes-nova' %}?id={{ ata.id }}"><i class="material-icons">edit</i></a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4">
+                                <div class"center-align"><i>Nenhuma Reunião</i></div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% if atas.has_other_pages %}
+                <ul class="pagination">
+                    <li class="waves-effect {% if not atas.has_previous %}disabled{% endif %}"><a href="" data-url="{% if atas.has_previous %}?page={{ atas.previous_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_left</i></a></li>
+                    {% for i in atas.paginator.page_range %}
+                        <li class="waves-effect {% if atas.number == i %}active{% endif %}"><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+
+                    <li class="waves-effect {% if not atas.has_next %}disabled{% endif %}"><a href="{% if atas.has_next %}?page={{ atas.next_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_right</i></a></li>
+
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            $('.modal-trigger').click(function(event) {
+                $.get($(this).data('url'), function(data) {
+                    $("#conteudo-ata").empty()
+                    $(".ck").remove()
+                    $("#titulo-ata").text("Ata: " + data.titulo)
+                    $("#conteudo-ata").append($.parseHTML(data.ata))
+                    ClassicEditor
+                        .create( document.querySelector( '#conteudo-ata' ), {
+                            language: 'pt-br',
+                            removePlugins: [ 'ImageUpload' ],
+                        })
+                        .then(editor => {
+                            editor.isReadOnly = true
+                        })
+                        .catch( error => {
+                            console.error( error );
+                        } );
+                });
+            });
+            $('.modal-close').click(function () {
+                $("#conteudo-ata").empty()
+                $(".ck").remove()
+            });
+        });
+    </script>
+
+{% endblock %}

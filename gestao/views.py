@@ -1,7 +1,8 @@
 import datetime
 import random
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -11,36 +12,15 @@ from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 
-from gestao.models import DiretorioAcademico, Area, Associado, Cargo
-from gestao.forms import DiretorioAcademicoForm, AreaForm, CargoForm, DiretorCargoForm, AssociadoForm, EgressoForm
-import gestao.utilidades as utilidades
+from . import models
+from . import forms
+from .utilidades import areas
 
-areas = [
-    utilidades.Area('Direção Admnistrativa', 'gestao-administrativo', [
-        utilidades.Ferramenta('Início', 'gestao-administrativo', 'home'),
-        utilidades.Ferramenta('Config. Diretório', 'gestao-config-diretorio', 'settings'),
-        utilidades.Ferramenta('Áreas', 'gestao-areas', 'view_carousel', [
-            utilidades.SubFerramenta('gestao-areas-nova')
-        ]),
-        utilidades.Ferramenta('Cargos', 'gestao-cargos', 'contacts', [
-            utilidades.SubFerramenta('gestao-cargos-novo'),
-        ]),
-        utilidades.Ferramenta('Diretores', 'gestao-diretores', 'people', [
-            utilidades.SubFerramenta('gestao-diretores-cargos'),
-        ]),
-        utilidades.Ferramenta('Associados', 'gestao-associados', 'people_outline', [
-            utilidades.SubFerramenta('gestao-associados-novo'),
-        ]),
-        utilidades.Ferramenta('Egressos', 'gestao-egressos', 'check', [
-            utilidades.SubFerramenta('gestao-egressos-novo'),
-        ])
-    ]),
-    utilidades.Area('Comunicação', 'gestao-eventos', []),
-    utilidades.Area('Financeiro', 'gestao-financeira', []),
-    utilidades.Area('Eventos', 'gestao-eventos', []),
-]
+class BaseView(LoginRequiredMixin, View):
+    login_url = '/gestao/login'
 
-class GestorLoginView(View):
+
+class GestorLoginView(BaseView):
     template_name = 'gestor_login.html'
 
     def get(self, request, *args, **kwargs):
@@ -55,7 +35,12 @@ class GestorLoginView(View):
         if associado is not None:
             if associado.is_staff:
                 login(request, associado)
-                diretorio = DiretorioAcademico.objects.get(pk=1)
+
+                try:
+                    diretorio = models.DiretorioAcademico.objects.get(pk=1)
+                except models.DiretorioAcademico.DoesNotExist:
+                    return redirect(reverse('gestao-config-diretorio'))
+
                 if diretorio.sigla:
                     request.session['sigla_diretorio'] = diretorio.sigla
                 else:
@@ -63,6 +48,9 @@ class GestorLoginView(View):
 
                 if diretorio.logo:
                     request.session['logo_diretorio'] = diretorio.logo.url
+
+                if request.GET.get('next'):
+                    return redirect(request.GET.get('next'))
 
                 return redirect("/gestao/")
             else:
@@ -76,7 +64,7 @@ class GestorLoginView(View):
                 'matricula': matricula
             })
 
-class GestorHomeView(View):
+class GestorHomeView(BaseView):
     template_name = 'gestor_home.html'
 
     def get(self, request, *args, **kwargs):
@@ -91,11 +79,14 @@ class GestorHomeView(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-class ConfigurarDiretorioView(View):
+class ConfigurarDiretorioView(BaseView):
     template_name = 'configurar_diretorio.html'
     def get(self, request, *args, **kwargs):
-        diretorio = DiretorioAcademico.objects.get(pk=1)
-        form = DiretorioAcademicoForm(instance=diretorio)
+        try:
+            diretorio = models.DiretorioAcademico.objects.get(pk=1)
+            form = forms.DiretorioAcademicoForm(instance=diretorio)
+        except models.DiretorioAcademico.DoesNotExist:
+            form = forms.DiretorioAcademicoForm()
 
         context = {
             'areas': areas,
@@ -107,14 +98,16 @@ class ConfigurarDiretorioView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        diretorio = DiretorioAcademico.objects.get(pk=1)
-        form = DiretorioAcademicoForm(request.POST, request.FILES, instance=diretorio)
+        try:
+            diretorio = models.DiretorioAcademico.objects.get(pk=1)
+            form = forms.DiretorioAcademicoForm(request.POST, request.FILES, instance=diretorio)
+        except models.DiretorioAcademico.DoesNotExist:
+            form = forms.DiretorioAcademicoForm(request.POST, request.FILES)
 
         if form.is_valid():
-            print(form.cleaned_data['logo'])
             form.save()
 
-            diretorio = DiretorioAcademico.objects.get(pk=1)
+            diretorio = models.DiretorioAcademico.objects.get(pk=1)
 
             request.session['sigla_diretorio'] = diretorio.sigla
             request.session['logo_diretorio'] = diretorio.logo.url
@@ -133,16 +126,16 @@ class ConfigurarDiretorioView(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-class AreasView(View):
+class AreasView(BaseView):
     template_name = 'areas/index.html'
 
     def get(self, request, *args, **kwargs):
         termo_pesquisa = request.GET.get('termo', None)
 
         if termo_pesquisa:
-            lista_areas = Area.objects.filter(Q(nome__startswith=termo_pesquisa) | Q(gestor__nome__startswith=termo_pesquisa))
+            lista_areas = models.Area.objects.filter(Q(nome__startswith=termo_pesquisa) | Q(gestor__nome__startswith=termo_pesquisa))
         else:
-            lista_areas = Area.objects.all()
+            lista_areas = models.Area.objects.all()
 
         paginator = Paginator(lista_areas, 5)
 
@@ -169,16 +162,16 @@ class AreasView(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-class AreaView(View):
+class AreaView(BaseView):
     template_name = 'areas/area.html'
 
     def get(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            area = Area.objects.get(pk=id)
-            form = AreaForm(instance=area)
+            area = models.Area.objects.get(pk=id)
+            form = forms.AreaForm(instance=area)
         else:
-            form = AreaForm()
+            form = forms.AreaForm()
 
         context = {
             'areas': areas,
@@ -192,17 +185,16 @@ class AreaView(View):
     def post(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            area = Area.objects.get(pk=id)
-            form = AreaForm(request.POST, instance=area)
+            area = models.Area.objects.get(pk=id)
+            form = forms.AreaForm(request.POST, instance=area)
         else:
-            form = AreaForm(request.POST)
+            form = forms.AreaForm(request.POST)
 
         if form.is_valid():
             associado = form.cleaned_data['gestor']
             area = form.save(commit=False)
             area.gestor = associado
             area.save()
-            # form.save()
             return redirect(reverse('gestao-areas'))
 
         context = {
@@ -217,7 +209,7 @@ class AreaView(View):
     def delete(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            Area.objects.filter(pk=id).delete()
+            models.Area.objects.filter(pk=id).delete()
 
         return redirect(reverse('gestao-areas'))
 
@@ -227,16 +219,16 @@ class AreaView(View):
             return self.delete(self.request, *args, **kwargs)
         return super().dispatch(*args, **kwargs)
 
-class CargosView(View):
+class CargosView(BaseView):
     template_name = "cargos/index.html"
 
     def get(self, request, *args, **kwargs):
         termo_pesquisa = request.GET.get('termo', None)
 
         if termo_pesquisa:
-            lista_cargos = Cargo.objects.filter(Q(nome__startswith=termo_pesquisa))
+            lista_cargos = models.Cargo.objects.filter(Q(nome__startswith=termo_pesquisa))
         else:
-            lista_cargos = Cargo.objects.all()
+            lista_cargos = models.Cargo.objects.all()
 
         paginator = Paginator(lista_cargos, 5)
 
@@ -263,16 +255,16 @@ class CargosView(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-class CargoView(View):
+class CargoView(BaseView):
     template_name = 'cargos/cargo.html'
 
     def get(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            cargo = Cargo.objects.get(pk=id)
-            form = CargoForm(instance=cargo)
+            cargo = models.Cargo.objects.get(pk=id)
+            form = forms.CargoForm(instance=cargo)
         else:
-            form = CargoForm()
+            form = forms.CargoForm()
 
         context = {
             'areas': areas,
@@ -286,10 +278,10 @@ class CargoView(View):
     def post(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            cargo = Cargo.objects.get(pk=id)
-            form = CargoForm(request.POST, instance=cargo)
+            cargo = models.Cargo.objects.get(pk=id)
+            form = forms.CargoForm(request.POST, instance=cargo)
         else:
-            form = CargoForm(request.POST)
+            form = forms.CargoForm(request.POST)
 
         if form.is_valid():
             associados = form.cleaned_data['associados']
@@ -299,7 +291,6 @@ class CargoView(View):
             for associado in associados:
                 cargo.associados.add(associado)
             cargo.save()
-            # form.save()
             return redirect(reverse('gestao-cargos'))
 
         context = {
@@ -314,7 +305,7 @@ class CargoView(View):
     def delete(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            Cargo.objects.filter(pk=id).delete()
+            models.Cargo.objects.filter(pk=id).delete()
 
         return redirect(reverse('gestao-cargos'))
 
@@ -324,16 +315,16 @@ class CargoView(View):
             return self.delete(self.request, *args, **kwargs)
         return super().dispatch(*args, **kwargs)
 
-class DiretoresView(View):
+class DiretoresView(BaseView):
     template_name = "diretores/index.html"
 
     def get(self, request, *args, **kwargs):
         termo_pesquisa = request.GET.get('termo', None)
 
         if termo_pesquisa:
-            diretores = Associado.objects.filter(Q(is_staff=True) & (Q(nome__startswith=termo_pesquisa) | Q(cargo__nome__startswith=termo_pesquisa)))
+            diretores = models.Associado.objects.filter(Q(is_staff=True) & (Q(nome__startswith=termo_pesquisa) | Q(cargo__nome__startswith=termo_pesquisa)))
         else:
-            diretores = Associado.objects.filter(is_staff=True)
+            diretores = models.Associado.objects.filter(is_staff=True)
 
         paginator = Paginator(diretores, 5)
 
@@ -365,15 +356,15 @@ class DiretoresView(View):
             return self.delete(self.request, *args, **kwargs)
         return super().dispatch(*args, **kwargs)
 
-class DiretorCargosView(View):
+class DiretorCargosView(BaseView):
     template_name = 'diretores/cargos.html'
 
     def get(self, request, id, *args, **kwargs):
-        diretor = Associado.objects.get(pk=id)
+        diretor = models.Associado.objects.get(pk=id)
         initial = {
             'cargos': [cargo.id for cargo in diretor.cargos.all()]
         }
-        form = DiretorCargoForm(initial=initial, instance=diretor)
+        form = forms.DiretorCargoForm(initial=initial, instance=diretor)
 
         context = {
             'areas': areas,
@@ -385,8 +376,8 @@ class DiretorCargosView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, id, *args, **kwargs):
-        diretor = Associado.objects.get(pk=id)
-        form = DiretorCargoForm(request.POST, instance=diretor)
+        diretor = models.Associado.objects.get(pk=id)
+        form = forms.DiretorCargoForm(request.POST, instance=diretor)
 
         if form.is_valid():
             diretor.cargos.clear()
@@ -406,7 +397,7 @@ class DiretorCargosView(View):
         return render(request, self.template_name, context)
 
     def delete(self, request, id, *args, **kwargs):
-        diretor = Associado.objects.get(pk=id)
+        diretor = models.Associado.objects.get(pk=id)
         if not diretor.is_superuser:
             diretor.cargos.clear()
             diretor.is_staff = False
@@ -421,14 +412,14 @@ class DiretorCargosView(View):
             return self.delete(self.request, id, *args, **kwargs)
         return super().dispatch(*args, **kwargs)
 
-class AssociadosView(View):
+class AssociadosView(BaseView):
     template_name = 'associados/index.html'
 
     def get(self, request, *args, **kwargs):
         termo_pesquisa = request.GET.get('termo', None)
 
         if termo_pesquisa:
-            associados = Associado.objects.filter(
+            associados = models.Associado.objects.filter(
                 Q(is_active=True) &
                 (
                     Q(nome__startswith=termo_pesquisa) |
@@ -439,7 +430,7 @@ class AssociadosView(View):
                 )
             )
         else:
-            associados = Associado.objects.filter(
+            associados = models.Associado.objects.filter(
                 is_active=True
             )
 
@@ -472,16 +463,16 @@ class AssociadosView(View):
         #     return self.delete(self.request, id, *args, **kwargs)
         return super().dispatch(*args, **kwargs)
 
-class AssociadoView(View):
+class AssociadoView(BaseView):
     template_name = 'associados/associado.html'
 
     def get(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            associado = Associado.objects.get(pk=id)
-            form = AssociadoForm(instance=associado)
+            associado = models.Associado.objects.get(pk=id)
+            form = forms.AssociadoForm(instance=associado)
         else:
-            form = AssociadoForm()
+            form = forms.AssociadoForm()
 
         context = {
             'areas': areas,
@@ -495,10 +486,10 @@ class AssociadoView(View):
     def post(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            associado = Associado.objects.get(pk=id)
-            form = AssociadoForm(request.POST, request.FILES, instance=associado)
+            associado = models.Associado.objects.get(pk=id)
+            form = forms.AssociadoForm(request.POST, request.FILES, instance=associado)
         else:
-            form = AssociadoForm(request.POST, request.FILES)
+            form = forms.AssociadoForm(request.POST, request.FILES)
 
         if form.is_valid():
             form.save()
@@ -516,7 +507,7 @@ class AssociadoView(View):
     def delete(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            Associado.objects.filter(pk=id).delete()
+            models.Associado.objects.filter(pk=id).delete()
 
         return redirect(reverse('gestao-associados'))
 
@@ -526,14 +517,14 @@ class AssociadoView(View):
             return self.delete(self.request, *args, **kwargs)
         return super().dispatch(*args, **kwargs)
 
-class EgressosView(View):
+class EgressosView(BaseView):
     template_name = 'egressos/index.html'
 
     def get(self, request, *args, **kwargs):
         termo_pesquisa = request.GET.get('termo', None)
 
         if termo_pesquisa:
-            associados = Associado.objects.filter(
+            associados = models.Associado.objects.filter(
                 Q(is_active=False) &
                 (
                     Q(nome__startswith=termo_pesquisa) |
@@ -544,7 +535,7 @@ class EgressosView(View):
                 )
             )
         else:
-            associados = Associado.objects.filter(
+            associados = models.Associado.objects.filter(
                 is_active=False
             )
 
@@ -569,24 +560,16 @@ class EgressosView(View):
 
         return render(request, self.template_name, context)
 
-    @method_decorator(login_required(login_url="/gestao/login"))
-    def dispatch(self, *args, **kwargs):
-        # if self.request.GET.get('method', None) == 'DELETE':
-        #     id = kwargs['id']
-        #     del kwargs['id']
-        #     return self.delete(self.request, id, *args, **kwargs)
-        return super().dispatch(*args, **kwargs)
-
-class EgressoView(View):
+class EgressoView(BaseView):
     template_name = 'egressos/egresso.html'
 
     def get(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            associado = Associado.objects.get(pk=id)
-            form = EgressoForm(instance=associado)
+            associado = models.Associado.objects.get(pk=id)
+            form = forms.EgressoForm(instance=associado)
         else:
-            form = EgressoForm()
+            form = forms.EgressoForm()
 
         context = {
             'areas': areas,
@@ -600,12 +583,12 @@ class EgressoView(View):
     def post(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            associado = Associado.objects.get(pk=id)
-            form = EgressoForm(request.POST, request.FILES, instance=associado)
+            associado = models.Associado.objects.get(pk=id)
+            form = forms.EgressoForm(request.POST, request.FILES, instance=associado)
         else:
             random.seed(datetime.datetime.now())
 
-            form = EgressoForm(request.POST, request.FILES)
+            form = forms.EgressoForm(request.POST, request.FILES)
 
 
         if form.is_valid():
@@ -631,22 +614,133 @@ class EgressoView(View):
     def delete(self, request, *args, **kwargs):
         id = request.GET.get('id', None)
         if id:
-            Associado.objects.filter(pk=id).delete()
+            models.Associado.objects.filter(pk=id).delete()
 
         return redirect(reverse('gestao-egressos'))
 
-    @method_decorator(login_required(login_url="/gestao/login"))
     def dispatch(self, *args, **kwargs):
         if self.request.GET.get('method', None) == 'DELETE':
             return self.delete(self.request, *args, **kwargs)
         return super().dispatch(*args, **kwargs)
 
-class EventosView(View):
-    template_name = 'eventos.html'
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+class AtasView(BaseView):
+    template_name = 'atas/index.html'
 
-class FinancasView(View):
-    template_name = 'financas.html'
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        termo_pesquisa = request.GET.get('termo', None)
+
+        if termo_pesquisa:
+            atas = models.Reuniao.objects.filter(Q(data__startswith=termo_pesquisa))
+        else:
+            atas = models.Reuniao.objects.all()
+
+        paginator = Paginator(atas, 5)
+
+        page = request.GET.get('page', 1)
+
+        try:
+            atas = paginator.page(page)
+        except PageNotAnInteger:
+            atas = paginator.page(1)
+        except EmptyPage:
+            atas = paginator.page(paginator.num_pages)
+
+        context = {
+            'areas': areas,
+            'area_ferramentas': areas[0].ferramentas,
+            'nome_url': resolve(request.path_info).url_name,
+            'atas': atas,
+            'termo': termo_pesquisa,
+        }
+
+        return render(request, self.template_name, context)
+
+    @method_decorator(login_required(login_url="/gestao/login"))
+    def dispatch(self, *args, **kwargs):
+        # if self.request.GET.get('method', None) == 'DELETE':
+        #     return self.delete(self.request, *args, **kwargs)
+        return super().dispatch(*args, **kwargs)
+
+class AtaView(BaseView):
+    template_name = 'atas/ata.html'
+
+    def get(self, request, *args, **kwargs):
+        id = request.GET.get('id', None)
+        if id:
+            reuniao = models.Reuniao.objects.get(pk=id)
+            form = forms.ReuniaoForm(instance=reuniao)
+        else:
+            form = forms.ReuniaoForm(initial={
+                'ata': "Transcrição de ata..."
+            })
+
+        context = {
+            'areas': areas,
+            'area_ferramentas': areas[0].ferramentas,
+            'nome_url': resolve(request.path_info).url_name,
+            'form': form,
+            'id': id,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        id = request.GET.get('id', None)
+        if id:
+            reuniao = models.Reuniao.objects.get(pk=id)
+            form = forms.ReuniaoForm(request.POST, instance=reuniao)
+        else:
+            form = forms.ReuniaoForm(request.POST)
+
+
+        if form.is_valid():
+            presentes = form.cleaned_data['presentes']
+            reuniao = form.save(commit=False)
+            reuniao.save()
+            reuniao.presentes.clear()
+
+            for presente in presentes:
+                reuniao.presentes.add(presente)
+
+            reuniao.save()
+
+            return redirect(reverse('gestao-reunioes'))
+
+
+        context = {
+            'areas': areas,
+            'area_ferramentas': areas[0].ferramentas,
+            'nome_url': resolve(request.path_info).url_name,
+            'form': form,
+            'id': id,
+        }
+        return render(request, self.template_name, context)
+
+    def delete(self, request, *args, **kwargs):
+        id = request.GET.get('id', None)
+        if id:
+            models.Reuniao.objects.filter(pk=id).delete()
+
+        return redirect(reverse('gestao-reunioes'))
+
+    def see(self, request, *args, **kwargs):
+        id = request.GET.get('id', None)
+        reuniao = models.Reuniao.objects.get(pk=id)
+        response = {
+            'id': id,
+            'data': reuniao.data,
+            'titulo': reuniao.titulo,
+            'presentes': [associado.nome for associado in reuniao.presentes.all()],
+            'ata': reuniao.ata
+        }
+        return JsonResponse(response)
+
+
+    def dispatch(self, *args, **kwargs):
+        if self.request.GET.get('method', None) == 'DELETE':
+            return self.delete(self.request, *args, **kwargs)
+        if self.request.GET.get('method', None) == 'SEE':
+            return self.see(self.request, *args, **kwargs)
+        return super().dispatch(*args, **kwargs)
+
+class GruposView(BaseView):
+    pass

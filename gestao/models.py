@@ -39,9 +39,10 @@ class Cargo(models.Model):
     associados = models.ManyToManyField(Associado, related_name="cargos")
 
 class Reuniao(models.Model):
-    data = models.DateField(auto_now=True, verbose_name="Data da reunião")
+    data = models.DateField(verbose_name="Data da reunião")
+    titulo = models.CharField(max_length=50, verbose_name="Título da Ata", null=True)
     ata = models.TextField(verbose_name="Transcrição da ata...")
-    presentes = models.ManyToManyField(Associado)
+    presentes = models.ManyToManyField(Associado, related_name='reunioes')
 
 class DiretorioAcademico(models.Model):
     nome = models.CharField(max_length=100, verbose_name="Nome do diretório acadêmico")

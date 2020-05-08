@@ -19,5 +19,19 @@
         "fields": {
             "nome": "Eventos"
         }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 4,
+        "fields": {
+            "nome": "Acadêmico"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 5,
+        "fields": {
+            "nome": "Comunicação"
+        }
     }
 ]

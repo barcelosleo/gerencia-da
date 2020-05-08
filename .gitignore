@@ -4,6 +4,7 @@
 
 ### Local Change ###
 **/node_modules/*
+static/
 
 ### Database ###
 *.accdb

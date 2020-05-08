@@ -1,0 +1,228 @@
+[
+    {
+        "model": "gestao.Area",
+        "pk": 1,
+        "fields": {
+            "nome": "Direção Administrativa"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 2,
+        "fields": {
+            "nome": "Financeiro"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 3,
+        "fields": {
+            "nome": "Eventos"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 4,
+        "fields": {
+            "nome": "Acadêmico"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 5,
+        "fields": {
+            "nome": "Comunicação"
+        }
+    },
+    {
+        "model": "gestao.Cargo",
+        "pk": 1,
+        "fields": {
+            "nome": "Presidente",
+            "area_id": 1
+        }
+    },
+    {
+        "model": "gestao.Cargo",
+        "pk": 2,
+        "fields": {
+            "nome": "Vice-Presidente",
+            "area_id": 1
+        }
+    },
+    {
+        "model": "gestao.Cargo",
+        "pk": 3,
+        "fields": {
+            "nome": "Tesoureiro",
+            "area_id": 2
+        }
+    },
+    {
+        "model": "gestao.Cargo",
+        "pk": 4,
+        "fields": {
+            "nome": "Comunicação",
+            "area_id": 5
+        }
+    },
+    {
+        "model": "gestao.Cargo",
+        "pk": 5,
+        "fields": {
+            "nome": "Eventos",
+            "area_id": 3
+        }
+    },
+    {
+        "model": "gestao.Cargo",
+        "pk": 6,
+        "fields": {
+            "nome": "Secretário",
+            "area_id": 1
+        }
+    },
+    {
+        "model": "gestao.Cargo",
+        "pk": 7,
+        "fields": {
+            "nome": "Acadêmico",
+            "area_id": 4
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 2,
+        "fields": {
+            "nome": "Moana",
+            "sobrenome": "da Silva",
+            "email": "moana@silva.com",
+            "telefone": "(55) 99551-4444",
+            "matricula": "00302061",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": true,
+            "is_staff": true
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 3,
+        "fields": {
+            "nome": "Boria",
+            "sobrenome": "da Minancora",
+            "email": "boria@mina.com",
+            "telefone": "(55) 9851-35897",
+            "matricula": "00302062",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": true,
+            "is_staff": true
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 4,
+        "fields": {
+            "nome": "Varana",
+            "sobrenome": "da Shina",
+            "email": "varana@shina.com",
+            "telefone": "(55) 9854-7812",
+            "matricula": "00302063",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": true,
+            "is_staff": true
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 5,
+        "fields": {
+            "nome": "Grapindo",
+            "sobrenome": "Joenilson",
+            "email": "grapindo@joenilson.com",
+            "telefone": "(56) 98412-2323",
+            "matricula": "00302064",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": true,
+            "is_staff": true
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 6,
+        "fields": {
+            "nome": "Átilo",
+            "sobrenome": "Iamarino",
+            "email": "atilo@iamarino.com",
+            "telefone": "(21) 8516-9872",
+            "matricula": "00302065",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": true,
+            "is_staff": true
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 7,
+        "fields": {
+            "nome": "Jaílsa",
+            "sobrenome": "Reimbold",
+            "email": "jailsa@reimbold.com",
+            "telefone": "(54) 98123-9852",
+            "matricula": "00302066",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": true,
+            "is_staff": true
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 8,
+        "fields": {
+            "nome": "Romaria",
+            "sobrenome": "Fonseca",
+            "email": "romaria@fonseca.com",
+            "telefone": "(51) 98752-8752",
+            "matricula": "00302067",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": true,
+            "is_staff": false
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 9,
+        "fields": {
+            "nome": "Sabrino",
+            "sobrenome": "Martao",
+            "email": "sabrino@martao.com",
+            "telefone": "(51) 98765-6548",
+            "matricula": "00302068",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": true,
+            "is_staff": false
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 10,
+        "fields": {
+            "nome": "Clariço",
+            "sobrenome": "Bragança",
+            "email": "clarico@braganca.com",
+            "telefone": "(21) 8654-8922",
+            "matricula": "00302069",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": false,
+            "is_staff": false
+        }
+    }
+]

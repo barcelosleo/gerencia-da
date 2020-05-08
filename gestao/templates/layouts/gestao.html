@@ -30,7 +30,13 @@
         <div class="navbar navbar-fixed">
             <nav class="nav-wrapper blue darken-4">
                 <a href="{% url 'gestao-administrativo' %}" class="brand-logo">
-                    <img id="logo" src="{{ request.session.logo_diretorio }}" alt="{{ request.session.sigla_diretorio }}">
+                    {% if request.session.logo_diretorio %}
+                        <img id="logo" src="{{ request.session.logo_diretorio }}" alt="{{ request.session.sigla_diretorio }}">
+                    {% elif request.session.sigla_diretorio %}
+                        {{ request.session.sigla_diretorio }}
+                    {% else %}
+                        Diretório Acadêmico
+                    {% endif %}
                 </a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     {% for area in areas %}

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt">
+  {% load compress %}
   {% load static %}
   <head>
+    <meta charset="UTF-8">
     <!-- Title -->
     <title>
         {% block title %}Gerência de Diretório Acadêmico{% endblock %}
@@ -13,11 +15,16 @@
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <!-- Arquivos CSS -->
-    {% include 'material/includes/material_css.html' %}
+    {% compress css %}
+      <!-- Arquivos CSS -->
+      {% comment %} {% include 'material/includes/material_css.html' %} {% endcomment %}
+      <link rel="stylesheet" href="{% static 'materialize-css/dist/css/materialize.min.css' %}">
+      <link href="{% static 'material/css/materialize.forms.css' %}" rel="stylesheet">
+      <link href="{% static 'material/css/jquery.datetimepicker.css' %}" rel="stylesheet">
 
-    <!-- Bloco de Estilos -->
-    {% block styles %}{% endblock %}
+      <!-- Bloco de Estilos -->
+      {% block styles %}{% endblock %}
+    {% endcompress %}
   </head>
 
   <body>
@@ -28,31 +35,40 @@
     <!-- Bloco de conteúdo -->
     {% block conteudo %}{% endblock %}
 
-    <!-- Arquivos necessários para o Materialize -->
-    <script src="{% static 'js/jquery-3.5.0.min.js' %}"></script>
-    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
-    {% include 'material/includes/material_js.html' %}
+    {% compress js %}
+      <!-- Arquivos necessários para o Materialize -->
+      <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
+      <script src="{% static 'jquery-mask-plugin/dist/jquery.mask.min.js' %}"></script>
+      <script src="{% static 'materialize-css/dist/js/materialize.min.js' %}"></script>
+      <script src="{% static '@ckeditor/ckeditor5-build-classic/build/ckeditor.js' %}"></script>
+      <script src="{% static '@ckeditor/ckeditor5-build-classic/build/translations/pt-br.js' %}"></script>
 
-    <!-- Bloco de scripts -->
-    <script>
-      $(document).ready(function(){
-        $('.tooltipped').tooltip();
-        $('.modal').modal();
-        $('.mascara-telefone').mask('(00) 0000-00009').focusout(function(event) {
-          var target, phone, element;
-          target = (event.currentTarget) ? event.currentTarget : event.srcElement;
-          phone = target.value.replace(/\D/g, '');
-          element = $(target);
-          element.unmask();
-          if(phone.length > 10) {
-            element.mask('(00) 00000-0000')
-          } else {
-            element.mask('(00) 0000-0000')
-          }
-        })
-      });
-    </script>
-    {% block scripts %}{% endblock %}
+      {% comment %} {% include 'material/includes/material_js.html' %} {% endcomment %}
+      <script src="{% static 'material/js/materialize.components.js' %}"></script>
+      <script src="{% static 'material/js/jquery.datetimepicker.full.js' %}"></script>
+      <script src="{% static 'material/js/jquery.formset.js' %}"></script>
 
+      <!-- Bloco de scripts -->
+      <script>
+        $(document).ready(function(){
+          $('.tooltipped').tooltip();
+          $('.modal').modal();
+          $('.mascara-cpf').mask('000.000.000-00');
+          $('.mascara-telefone').mask('(00) 0000-00009').focusout(function(event) {
+            var target, phone, element;
+            target = (event.currentTarget) ? event.currentTarget : event.srcElement;
+            phone = target.value.replace(/\D/g, '');
+            element = $(target);
+            element.unmask();
+            if(phone.length > 10) {
+              element.mask('(00) 00000-0000')
+            } else {
+              element.mask('(00) 0000-0000')
+            }
+          });
+        });
+      </script>
+      {% block scripts %}{% endblock %}
+    {% endcompress %}
   </body>
 </html>

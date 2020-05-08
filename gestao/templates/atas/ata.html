@@ -1,0 +1,41 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load material_form %}
+{% load static %}
+
+{% block conteudo_gestao %}
+    <div class="container">
+        <div class="row">
+            <h5>Nova Ata de Reunião do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            {% if id %}
+                <form class="col s12" action="{% url 'gestao-reunioes-nova' %}?id={{ id }}" method="POST">
+            {% else %}
+                <form class="col s12" action="{% url 'gestao-reunioes-nova' %}" method="POST">
+            {% endif %}
+                {% csrf_token %}
+                {% form form=form %}{% endform %}
+                <div class="row">
+                    <button type="submit" name="_submit" class="btn green">Salvar</button>
+                    <a class="btn light-blue" href="{% url 'gestao-reunioes' %}">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            ClassicEditor
+                .create( document.querySelector( '.editor' ), {
+                    language: 'pt-br',
+                    removePlugins: [ 'ImageUpload' ]
+                })
+                .catch( error => {
+                    console.error( error );
+                } );
+        });
+    </script>
+{% endblock scripts %}

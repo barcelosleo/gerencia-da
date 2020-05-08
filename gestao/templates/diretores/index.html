@@ -1,7 +1,7 @@
 {% extends 'layouts/gestao.html' %}
 
 {% block conteudo_gestao %}
-    <div class="container">
+    <div class="col s12">
         <div class="row">
             <h5>Diretores do Diretório Acadêmico</h5>
         </div>
@@ -46,6 +46,9 @@
                             <td>
                                 <a class="btn-floating waves-effect waves-light tooltipped gray" data-position="top" data-tooltip="Desvincular Diretor" href="{% url 'gestao-diretores-cargos' id=diretor.id %}?method=DELETE"><i class="material-icons">content_cut</i></a>
                                 <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Cargos" href="{% url 'gestao-diretores-cargos' id=diretor.id %}"><i class="material-icons">contacts</i></a>
+                                {% if request.user.is_superuser %}
+                                    <a class="btn-floating waves-effect waves-light tooltipped red" data-position="top" data-tooltip="Editar Senha de Diretor" href="{% url 'gestao-diretores-cargos' id=diretor.id %}"><i class="material-icons">lock</i></a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

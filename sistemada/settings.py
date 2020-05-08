@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'material',
-    'material.theme.blue',
+    'django_node_assets',
+    'compressor',
     'gestao',
     'financeiro',
     'eventos',
@@ -134,3 +135,22 @@ AUTH_USER_MODEL = 'gestao.Associado'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django_node_assets.finders.NodeModulesFinder',
+    'compressor.finders.CompressorFinder',
+)
+
+NODE_PACKAGE_JSON = os.path.join(BASE_DIR, "package.json")
+
+NODE_MODULES_ROOT = os.path.join(BASE_DIR, "node_modules")
+
+COMPRESS_ROOT = STATIC_ROOT
+
+COMPRESS_PRECOMPILERS = (
+    ('text/es6', './node_modules/.bin/browserify {infile} -t babelify --outfile {outfile}'),
+)
+
+# COMPRESS_ENABLED = True
