@@ -1,9 +1,10 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from django.db.models import Q
+from django.contrib.auth.models import Group
 import material
 
-from . import models
+from gestao import models
 
 class ModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -17,7 +18,6 @@ class AssociadoCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = models.Associado
         fields = ('matricula', 'email',)
-
 
 class AssociadoChangeForm(UserChangeForm):
     class Meta:
@@ -35,20 +35,10 @@ class AreaForm(forms.ModelForm):
         model = models.Area
         fields = ("nome",)
 
-class CargoForm(forms.ModelForm):
-    associados = MultipleModelChoiceField(queryset=models.Associado.objects.filter(Q(is_staff=True) & Q(is_active=True)), required=False)
-    area = ModelChoiceField(queryset=models.Area.objects.all())
-
-    class Meta:
-        model = models.Cargo
-        fields = ("nome", "area", "associados", )
-
 class DiretorCargoForm(forms.ModelForm):
-    cargos = MultipleModelChoiceField(queryset=models.Cargo.objects.all(), required=False)
-
     class Meta:
-        model = models.Associado
-        fields = ("cargos", )
+        model = models.Diretor
+        fields = ("groups", )
 
 class AssociadoForm(forms.ModelForm):
     layout = material.Layout(
@@ -95,7 +85,7 @@ class EgressoForm(forms.ModelForm):
     telefone = forms.CharField(widget=forms.TextInput(attrs={'class': 'mascara-telefone'}), required=False)
 
     class Meta:
-        model = models.Associado
+        model = models.Egresso
         fields = (
             "nome",
             "sobrenome",
@@ -113,3 +103,8 @@ class ReuniaoForm(forms.ModelForm):
     class Meta:
         model = models.Reuniao
         fields = ("data", "titulo", "ata", "presentes")
+
+class GrupoForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ("name", "permissions", )

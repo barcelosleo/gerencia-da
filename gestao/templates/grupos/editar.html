@@ -1,0 +1,21 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load material_form %}
+
+{% block conteudo_gestao %}
+    <div class="container">
+        <div class="row">
+            <h5>Editar Grupo de Associado</h5>
+        </div>
+        <div class="row">
+            <form class="col s12" enctype="multipart/form-data"method="POST">
+                {% csrf_token %}
+                {% form form=form %}{% endform %}
+                <div class="row">
+                    <button type="submit" name="_submit" class="btn green">Salvar</button>
+                    <a class="btn light-blue" href="{% url 'gestao-grupos' %}">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

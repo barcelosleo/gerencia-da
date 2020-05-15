@@ -1,0 +1,20 @@
+{% extends 'layouts/base.html' %}
+
+{% load material_form %}
+
+{% block conteudo %}
+    <div class="container">
+        <div class="row">
+            <h5>Login de Gestor</h5>
+        </div>
+        <div class="row">
+            <form action="{% if next %}?next={{ next }}{% endif %}" class="col s12" method="POST">
+                {% csrf_token %}
+                {% form form=form %}{% endform %}
+                <div class="row">
+                    <button type="submit" name="_submit" class="btn green">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

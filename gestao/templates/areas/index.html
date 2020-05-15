@@ -2,6 +2,17 @@
 
 
 {% block conteudo_gestao %}
+    <!-- Modal Structure -->
+    <div id="confirmar-exclusao" class="modal">
+        <div class="modal-content">
+            <h4>Confirmar Exclusão de Área?</h4>
+            <p>Ao confirmar a exclusão do área, todos os vinculos serão removidos!</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" id="botao-confirmacao" class="modal-close waves-effect waves-green green btn-flat">Confirmar</a>
+            <a href="#!" class="modal-close waves-effect waves-orange orange btn-flat">Cancelar</a>
+        </div>
+    </div>
     <div class="col s12">
         <div class="row">
             <h5>Áreas Administrativas do Diretório Acadêmico</h5>
@@ -34,14 +45,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for area in areas_da %}
+                    {% for area in area_list %}
                         <tr>
                             <td>{{ area.id }}</td>
                             <td>{{ area.nome }}</td>
                             <td>{% if area.gestor.nome %}{{ area.gestor.nome }}{% else %}<i>Sem Gestor</i>{% endif %}</td>
                             <td>
-                                <a class="btn-floating waves-effect waves-light tooltipped gray" data-position="top" data-tooltip="Remover Área" href="{% url 'gestao-areas-nova' %}?id={{ area.id }}&method=DELETE"><i class="material-icons">delete</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Área" href="{% url 'gestao-areas-nova' %}?id={{ area.id }}"><i class="material-icons">edit</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover Área" data-modal-confirm-url="{% url 'gestao-areas-remover' pk=area.id %}" href="#confirmar-exclusao"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Área" href="{% url 'gestao-areas-editar' pk=area.id %}"><i class="material-icons">edit</i></a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4">
+                                <div class="center-align">
+                                    <i>Nenhuma área cadastrada</i>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}
@@ -49,17 +68,17 @@
             </table>
         </div>
         <div class="row center-align">
-            {% if areas_da.has_other_pages %}
-                <ul class="pagination">
-                    <li class="waves-effect {% if not areas_da.has_previous %}disabled{% endif %}"><a href="{% if areas_da.has_previous %}?page={{ areas_da.previous_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_left</i></a></li>
-                    {% for i in areas_da.paginator.page_range %}
-                        <li class="waves-effect {% if areas_da.number == i %}active{% endif %}"><a href="?page={{ i }}">{{ i }}</a></li>
-                    {% endfor %}
-
-                    <li class="waves-effect {% if not areas_da.has_next %}disabled{% endif %}"><a href="{% if areas_da.has_next %}?page={{ areas_da.next_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_right</i></a></li>
-
-                </ul>
-            {% endif %}
+            {% include 'utilidades/paginacao.html' %}
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            $('.modal-trigger').click(function(event) {
+                $('#botao-confirmacao').attr('href', $(this).data('modal-confirm-url'));
+            });
+        });
+    </script>
 {% endblock %}

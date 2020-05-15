@@ -5,14 +5,10 @@
 {% block conteudo_gestao %}
     <div class="container">
         <div class="row">
-            <h5>Novo Associado do Diretório Acadêmico</h5>
+            <h5>Editando Associado do Diretório Acadêmico</h5>
         </div>
         <div class="row">
-            {% if id %}
-                <form class="col s12" enctype="multipart/form-data" action="{% url 'gestao-associados-novo' %}?id={{ id }}" method="POST">
-            {% else %}
-                <form class="col s12" enctype="multipart/form-data" action="{% url 'gestao-associados-novo' %}" method="POST">
-            {% endif %}
+            <form class="col s12" enctype="multipart/form-data" method="POST">
                 {% csrf_token %}
                 {% form form=form %}{% endform %}
                 <div class="row">

@@ -1,6 +1,18 @@
 {% extends 'layouts/gestao.html' %}
 
+
 {% block conteudo_gestao %}
+    <!-- Modal Structure -->
+    <div id="confirmar-exclusao" class="modal">
+        <div class="modal-content">
+            <h4>Confirmar Exclusão de Egresso?</h4>
+            <p>Ao confirmar a exclusão do egresso, todos os registros vinculados serão removidos!</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" id="botao-confirmacao" class="modal-close waves-effect waves-green green btn-flat">Confirmar</a>
+            <a href="#!" class="modal-close waves-effect waves-orange orange btn-flat">Cancelar</a>
+        </div>
+    </div>
     <div class="col s12">
         <div class="row">
             <h5>Diretores do Diretório Acadêmico</h5>
@@ -18,6 +30,9 @@
                     </div>
                 </div>
             </form>
+            <div class="col s6">
+                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Diretor" href="{% url 'gestao-diretores-novo' %}"><i class="material-icons">add</i></a>
+            </div>
         </div>
         <div class="row">
             <table class="responsive-table highlight col s12">
@@ -25,30 +40,34 @@
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
-                        <th>Matrícula</th>
                         <th>Cargos</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for diretor in diretores %}
+                    {% for diretor in diretor_list %}
                         <tr>
                             <td>{{ diretor.id }}</td>
-                            <td>{{ diretor.nome }}</td>
-                            <td>{{ diretor.matricula }}</td>
+                            <td>{{ diretor.nome }} {{ diretor.sobrenome }}</td>
                             <td>
-                                {% for cargo in diretor.cargos.all %}
-                                    <div class="row"><span class="new badge orange" data-badge-caption="">{{ cargo.nome }}</span></div>
+                                {% for group in diretor.groups.all %}
+                                    <span class="new badge green" data-badge-caption="">{{ group.name }}</span>
                                 {% empty %}
-                                    <i>Sem Cargos</i>
+                                    <span class="new badge red" data-badge-caption="">Sem grupos</span>
                                 {% endfor %}
                             </td>
                             <td>
-                                <a class="btn-floating waves-effect waves-light tooltipped gray" data-position="top" data-tooltip="Desvincular Diretor" href="{% url 'gestao-diretores-cargos' id=diretor.id %}?method=DELETE"><i class="material-icons">content_cut</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Cargos" href="{% url 'gestao-diretores-cargos' id=diretor.id %}"><i class="material-icons">contacts</i></a>
-                                {% if request.user.is_superuser %}
-                                    <a class="btn-floating waves-effect waves-light tooltipped red" data-position="top" data-tooltip="Editar Senha de Diretor" href="{% url 'gestao-diretores-cargos' id=diretor.id %}"><i class="material-icons">lock</i></a>
-                                {% endif %}
+                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Diretor" href="{% url 'gestao-diretores-ver' pk=diretor.id %}"><i class="material-icons">remove_red_eye</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover Diretor" href="#confirmar-exclusao" data-modal-confirm-url="{% url 'gestao-diretores-remover' pk=diretor.id %}"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Diretor" href="{% url 'gestao-diretores-editar' pk=diretor.id %}"><i class="material-icons">edit</i></a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8">
+                                <div class="center-align">
+                                    <i>Nenhum diretor. Você precisa cadastrar Alunos</i>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}
@@ -56,17 +75,17 @@
             </table>
         </div>
         <div class="row center-align">
-            {% if diretores.has_other_pages %}
-                <ul class="pagination">
-                    <li class="waves-effect {% if not diretores.has_previous %}disabled{% endif %}"><a href="{% if diretores.has_previous %}?page={{ diretores.previous_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_left</i></a></li>
-                    {% for i in diretores.paginator.page_range %}
-                        <li class="waves-effect {% if diretores.number == i %}active{% endif %}"><a href="?page={{ i }}">{{ i }}</a></li>
-                    {% endfor %}
-
-                    <li class="waves-effect {% if not diretores.has_next %}disabled{% endif %}"><a href="{% if diretores.has_next %}?page={{ diretores.next_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_right</i></a></li>
-
-                </ul>
-            {% endif %}
+            {% include 'utilidades/paginacao.html' %}
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            $('.modal-trigger').click(function(event) {
+                $('#botao-confirmacao').attr('href', $(this).data('modal-confirm-url'));
+            });
+        });
+    </script>
 {% endblock %}

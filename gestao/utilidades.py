@@ -20,24 +20,36 @@ areas = [
         Ferramenta('Início', 'gestao-administrativo', 'home'),
         Ferramenta('Atas de Reunião', 'gestao-reunioes', 'book', [
             SubFerramenta('gestao-reunioes-nova'),
+            SubFerramenta('gestao-reunioes-editar'),
+            SubFerramenta('gestao-reunioes-ver'),
         ]),
-        Ferramenta('Associados', 'gestao-associados', 'people_outline', [
+        Ferramenta('Alunos', 'gestao-associados', 'people_outline', [
             SubFerramenta('gestao-associados-novo'),
+            SubFerramenta('gestao-associados-editar'),
+            SubFerramenta('gestao-associados-ver'),
         ]),
         Ferramenta('Egressos', 'gestao-egressos', 'check', [
             SubFerramenta('gestao-egressos-novo'),
+            SubFerramenta('gestao-egressos-editar'),
+            SubFerramenta('gestao-egressos-ver'),
         ]),
         # Ferramenta('Interessados no Curso', 'gestao-egressos', 'child_friendly', [
         #     SubFerramenta('gestao-egressos-novo'),
         # ]),
-        Ferramenta('Diretores', 'gestao-diretores', 'people', [
-            SubFerramenta('gestao-diretores-cargos'),
+        Ferramenta('Grupos', 'gestao-grupos', 'people_outline', [
+            SubFerramenta('gestao-grupos-novo'),
+            SubFerramenta('gestao-grupos-editar'),
+            SubFerramenta('gestao-grupos-ver'),
+            SubFerramenta('gestao-grupos-permissoes'),
         ]),
-        Ferramenta('Cargos', 'gestao-cargos', 'contacts', [
-            SubFerramenta('gestao-cargos-novo'),
+        Ferramenta('Diretores', 'gestao-diretores', 'people', [
+            SubFerramenta('gestao-diretores-novo'),
+            SubFerramenta('gestao-diretores-editar'),
+            SubFerramenta('gestao-diretores-ver'),
         ]),
         Ferramenta('Áreas', 'gestao-areas', 'view_carousel', [
-            SubFerramenta('gestao-areas-nova')
+            SubFerramenta('gestao-areas-nova'),
+            SubFerramenta('gestao-areas-editar'),
         ]),
         Ferramenta('Config. Diretório', 'gestao-config-diretorio', 'settings'),
     ]),

@@ -1,0 +1,9 @@
+{% if page_obj.has_other_pages %}
+    <ul class="pagination">
+        <li class="waves-effect {% if not page_obj.has_previous %}disabled{% endif %}"><a href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_left</i></a></li>
+        {% for i in page_obj.paginator.page_range %}
+            <li class="waves-effect {% if page_obj.number == i %}active{% endif %}"><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endfor %}
+        <li class="waves-effect {% if not page_obj.has_next %}disabled{% endif %}"><a href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}"><i class="material-icons">chevron_right</i></a></li>
+    </ul>
+{% endif %}

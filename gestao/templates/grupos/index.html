@@ -1,11 +1,12 @@
 {% extends 'layouts/gestao.html' %}
 
+
 {% block conteudo_gestao %}
     <!-- Modal Structure -->
     <div id="confirmar-exclusao" class="modal">
         <div class="modal-content">
-            <h4>Confirmar Exclusão de Reunião?</h4>
-            <p>Ao confirmar a exclusão da reunião, todos os registros vinculados serão removidos!</p>
+            <h4>Confirmar Exclusão de Grupo?</h4>
+            <p>Ao confirmar a exclusão do grupo, todos os registros vinculados serão removidos!</p>
         </div>
         <div class="modal-footer">
             <a href="#!" id="botao-confirmacao" class="modal-close waves-effect waves-green green btn-flat">Confirmar</a>
@@ -14,7 +15,7 @@
     </div>
     <div class="col s12">
         <div class="row">
-            <h5>Atas de Reunião do Diretório</h5>
+            <h5>Grupos de Associados</h5>
         </div>
         <div class="row right-align">
             <form method="GET" class="col s6">
@@ -30,7 +31,7 @@
                 </div>
             </form>
             <div class="col s6">
-                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Nova Ata" href="{% url 'gestao-reunioes-nova' %}"><i class="material-icons">add</i></a>
+                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Egresso" href="{% url 'gestao-grupos-novo' %}"><i class="material-icons">add</i></a>
             </div>
         </div>
         <div class="row">
@@ -38,35 +39,32 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Data</th>
-                        <th>Título</th>
-                        <th>Presentes</th>
+                        <th>Nome</th>
+                        <th>Nº Associados</th>
+                        <th>Nº Permissões</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for ata in reuniao_list %}
+                    {% for group in group_list %}
                         <tr>
-                            <td>{{ ata.id }}</td>
-                            <td>{{ ata.data|date:'d/m/Y' }}</td>
-                            <td>{{ ata.titulo }}</td>
+                            <td>{{ group.id }}</td>
+                            <td>{{ group.name }}</td>
+                            <td>{{ group.user_set.count }}</td>
+                            <td>{{ group.permissions.count }}</td>
                             <td>
-                                    {% for associado in ata.presentes.all %}
-                                        <span class="new badge blue" data-badge-caption="">{{ associado.nome }}</span>
-                                    {% empty %}
-                                        <i>Sem Presentes</i>
-                                    {% endfor %}
-                            </td>
-                            <td>
-                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Ata" href="{% url 'gestao-reunioes-ver' pk=ata.id %}"><i class="material-icons">remove_red_eye</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover Ata" data-modal-confirm-url="{% url 'gestao-reunioes-remover' pk=ata.id %}" href="#confirmar-exclusao"><i class="material-icons">delete</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Ata" href="{% url 'gestao-reunioes-editar' pk=ata.id %}"><i class="material-icons">edit</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Egresso" href="{% url 'gestao-grupos-ver' pk=group.id %}"><i class="material-icons">remove_red_eye</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Egresso" href="{% url 'gestao-grupos-permissoes' pk=group.id %}"><i class="material-icons">pencil</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover Egresso" href="#confirmar-exclusao" data-modal-confirm-url="{% url 'gestao-grupos-remover' pk=group.id %}"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Egresso" href="{% url 'gestao-grupos-editar' pk=group.id %}"><i class="material-icons">edit</i></a>
                             </td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="4">
-                                <div class"center-align"><i>Nenhuma Reunião</i></div>
+                            <td colspan="8">
+                                <div class="center-align">
+                                    <i>Nenhum grupo</i>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}

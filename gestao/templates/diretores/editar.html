@@ -5,10 +5,10 @@
 {% block conteudo_gestao %}
     <div class="container">
         <div class="row">
-            <h5>Atribuir/Editar senha à {{ diretor.nome }}</h5>
+            <h5>Editar Diretor do Curso</h5>
         </div>
         <div class="row">
-            <form class="col s12" method="POST">
+            <form class="col s12" enctype="multipart/form-data"method="POST">
                 {% csrf_token %}
                 {% form form=form %}{% endform %}
                 <div class="row">

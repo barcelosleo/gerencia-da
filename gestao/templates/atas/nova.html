@@ -9,11 +9,7 @@
             <h5>Nova Ata de Reunião do Diretório Acadêmico</h5>
         </div>
         <div class="row">
-            {% if id %}
-                <form class="col s12" action="{% url 'gestao-reunioes-nova' %}?id={{ id }}" method="POST">
-            {% else %}
-                <form class="col s12" action="{% url 'gestao-reunioes-nova' %}" method="POST">
-            {% endif %}
+            <form class="col s12" method="POST">
                 {% csrf_token %}
                 {% form form=form %}{% endform %}
                 <div class="row">

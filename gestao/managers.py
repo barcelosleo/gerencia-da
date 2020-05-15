@@ -1,5 +1,11 @@
+from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import ugettext_lazy as _
+import random
+
+def matricula_randomica(nome):
+    matricula = str(int(random.random() * 1e17))
+    return 'EGR' + matricula + "".join(random.sample(nome.strip(), 3)).upper()
 
 class AssociadoManager(BaseUserManager):
     """
@@ -31,3 +37,31 @@ class AssociadoManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(matricula, email, password, **extra_fields)
+
+class AlunoManager(models.Manager):
+    def get_queryset(self):
+        return super(AlunoManager, self).get_queryset().filter(is_staff=False)
+
+    def create(self, **kwargs):
+        kwargs.update({'is_staff': False})
+        return super(AlunoManager, self).create(**kwargs)
+
+class DiretorManager(models.Manager):
+    def get_queryset(self):
+        return super(DiretorManager, self).get_queryset().filter(is_staff=True)
+
+    def create(self, **kwargs):
+        kwargs.update({'is_staff': True})
+        return super(DiretorManager, self).create(**kwargs)
+
+class EgressoManager(models.Manager):
+    def get_queryset(self):
+        return super(EgressoManager, self).get_queryset().filter(is_active=False)
+
+    def create(self, **kwargs):
+        nome = kwargs.get('nome', '*!@')
+        kwargs.update({
+            'is_active': False,
+            'matricula': matricula_randomica(nome)
+        })
+        return super(EgressoManager, self).create(**kwargs)

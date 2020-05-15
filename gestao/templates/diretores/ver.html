@@ -1,0 +1,66 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load material_form %}
+{% load static %}
+
+{% block conteudo_gestao %}
+    <div class="col s12">
+        <div class="row">
+            <div class="col s10">
+                <h5>Diretor do Curso</h5>
+            </div>
+            <div class="col s2">
+                <a class="btn light-blue" href="{% url 'gestao-diretores' %}" style="margin-top: 16.4px">Voltar</a>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="section col s4">
+                <h5>Nome Completo</h5>
+                <p>{{ diretor.nome }} {{ diretor.sobrenome }}</p>
+            </div>
+            <div class="section col s4">
+                <h5>Email</h5>
+                <p>{{ diretor.email }}</p>
+            </div>
+            <div class="section col s4">
+                <h5>Telefone</h5>
+                <div class="">
+                    {% if diretor.telefone %}
+                        {{ diretor.telefone }}
+                    {% else %}
+                        <i>Sem telefone</i>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="section col s4">
+                <h5>Matrícula</h5>
+                <p>{{ diretor.matricula }}</p>
+            </div>
+            <div class="section col s4">
+                <h5>Ano de Matrícula</h5>
+                <p>{% if diretor.ano_matricula %}{{ diretor.ano_matricula }}{% else %}<i>Não Informado</i>{% endif %}</p>
+            </div>
+            <div class="section col s4">
+                <h5>Ano de Conclusão</h5>
+                <p>{% if diretor.previsao_conclusao %}{{ diretor.previsao_conclusao }}{% else %}<i>Não Informado</i>{% endif %}</p>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="section col s6">
+                <h5>Data do Cadastro</h5>
+                <p>{{ diretor.date_joined|date:'d/m/Y H:i:s' }}</p>
+            </div>
+            <div class="section col s6">
+                <h5>Último Login</h5>
+                <p>{{ diretor.last_login|date:'d/m/Y H:i:s' }}</p>
+            </div>
+        </div>
+        <div class="row">
+            {% include 'utilidades/para_topo.html' %}
+        </div>
+    </div>
+{% endblock %}
