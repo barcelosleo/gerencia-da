@@ -40,6 +40,7 @@
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
+                        <th>Matrícula</th>
                         <th>Cargos</th>
                         <th>Ações</th>
                     </tr>
@@ -49,6 +50,7 @@
                         <tr>
                             <td>{{ diretor.id }}</td>
                             <td>{{ diretor.nome }} {{ diretor.sobrenome }}</td>
+                            <td>{{ diretor.matricula }}</td>
                             <td>
                                 {% for group in diretor.groups.all %}
                                     <span class="new badge green" data-badge-caption="">{{ group.name }}</span>

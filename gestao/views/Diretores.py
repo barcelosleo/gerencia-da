@@ -9,7 +9,7 @@ from django.views.generic.detail import DetailView
 from gestao import models
 from gestao import forms
 
-from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin
+from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
 
 class DiretorListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'diretores/index.html'
@@ -27,27 +27,33 @@ class DiretorListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
         )
         return context
 
-class CriarDiretorView(CreateView, GestaoRegrasMixin, GestaoContextMixin):
+class CriarDiretorView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'diretores/novo.html'
     model = models.Associado
-    form_class = forms.AssociadoForm
+    form_class = forms.DiretorForm
     success_url = reverse_lazy('gestao-diretores')
+    permission_required = 'gestao.add_diretor'
 
     def form_valid(self, form):
         models.Diretor.objects.create(**form.cleaned_data)
-        return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(self.success_url)
 
-class EditarDiretorView(UpdateView, GestaoRegrasMixin, GestaoContextMixin):
+class EditarDiretorView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'diretores/editar.html'
     model = models.Diretor
     form_class = forms.DiretorCargoForm
     success_url = reverse_lazy('gestao-diretores')
+    permission_required = 'gestao.change_diretor'
 
-class RemoverDiretorView(DeleteView, GestaoRegrasMixin):
+class RemoverDiretorView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     model = models.Diretor
     success_url = reverse_lazy('gestao-diretores')
+    permission_required = 'gestao.delete_diretor'
 
     def get(self, request, *args, **kwargs):
+        if not self.has_permission():
+            return self.handle_no_permission()
+
         return self.post(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -58,6 +64,7 @@ class RemoverDiretorView(DeleteView, GestaoRegrasMixin):
         success_url = self.get_success_url()
         return HttpResponseRedirect(success_url)
 
-class VerDiretorView(DetailView, GestaoRegrasMixin, GestaoContextMixin):
+class VerDiretorView(DetailView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'diretores/ver.html'
     model = models.Diretor
+    permission_required = 'gestao.view_diretor'

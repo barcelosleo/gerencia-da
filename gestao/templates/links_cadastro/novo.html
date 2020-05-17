@@ -1,0 +1,22 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load material_form %}
+{% load static %}
+
+{% block conteudo_gestao %}
+    <div class="container">
+        <div class="row">
+            <h5>Criando Link de Cadastro</h5>
+        </div>
+        <div class="row">
+            <form class="col s12" method="POST">
+                {% csrf_token %}
+                {% form form=form %}{% endform %}
+                <div class="row">
+                    <button type="submit" name="_submit" class="btn green">Salvar</button>
+                    <a class="btn light-blue" href="{% url 'gestao-links-cadastro' %}">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

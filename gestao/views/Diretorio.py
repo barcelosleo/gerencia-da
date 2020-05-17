@@ -5,12 +5,13 @@ from django.views.generic.edit import UpdateView
 from gestao import models
 from gestao import forms
 
-from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin
+from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
 
-class ConfigurarDiretorioView(UpdateView, GestaoRegrasMixin, GestaoContextMixin):
+class ConfigurarDiretorioView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'diretorio/form.html'
     form_class = forms.DiretorioAcademicoForm
     success_url = reverse_lazy('gestao-config-diretorio')
+    permission_required = ('gestao.change_diretorioacademico', 'gestao.view_diretorioacademico')
 
     def form_valid(self, form):
         self.object = form.save()
@@ -21,4 +22,7 @@ class ConfigurarDiretorioView(UpdateView, GestaoRegrasMixin, GestaoContextMixin)
         return super().form_valid(form)
 
     def get_object(self):
-        return models.DiretorioAcademico.objects.get(pk=1)
+        try:
+            return models.DiretorioAcademico.objects.get(pk=1)
+        except models.DiretorioAcademico.DoesNotExist:
+            return models.DiretorioAcademico()

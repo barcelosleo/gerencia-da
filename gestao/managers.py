@@ -3,9 +3,9 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 import random
 
-def matricula_randomica(nome):
+def matricula_randomica(nome, sufixo):
     matricula = str(int(random.random() * 1e17))
-    return 'EGR' + matricula + "".join(random.sample(nome.strip(), 3)).upper()
+    return sufixo + matricula + "".join(random.sample(nome.strip(), 3)).upper()
 
 class AssociadoManager(BaseUserManager):
     """
@@ -62,6 +62,18 @@ class EgressoManager(models.Manager):
         nome = kwargs.get('nome', '*!@')
         kwargs.update({
             'is_active': False,
-            'matricula': matricula_randomica(nome)
+            'matricula': matricula_randomica(nome, 'EGR')
         })
         return super(EgressoManager, self).create(**kwargs)
+
+class ExternoManager(models.Manager):
+    def get_queryset(self):
+        return super(ExternoManager, self).get_queryset().filter(is_external=True)
+
+    def create(self, **kwargs):
+        nome = kwargs.get('nome', '*!@')
+        kwargs.update({
+            'is_external': False,
+            'matricula': matricula_randomica(nome, 'EXT')
+        })
+        return super(ExternoManager, self).create(**kwargs)

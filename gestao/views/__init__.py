@@ -6,4 +6,4 @@ from .Diretorio import *
 from .Egressos import *
 from .Gestor import *
 from .Grupos import *
-from .Permissoes import *
+from .LinksCadastro import *

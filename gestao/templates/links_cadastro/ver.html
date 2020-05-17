@@ -1,0 +1,58 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load material_form %}
+{% load static %}
+
+{% block conteudo_gestao %}
+    <div class="col s12">
+        <div class="row">
+            <div class="col s10">
+                <h5>Link de Cadastro</h5>
+            </div>
+            <div class="col s2">
+                <a class="btn light-blue" href="{% url 'gestao-links-cadastro' %}" style="margin-top: 16.4px">Voltar</a>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="section col s6">
+                <h5>Título</h5>
+                <p>{{ reuniao.titulo }}</p>
+            </div>
+            <div class="section col s6">
+                <h5>Data</h5>
+                <p>{{ reuniao.data|date:'d/m/Y' }}</p>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="section col s12">
+                <h5>Presentes</h5>
+                <ul class="collection">
+                    {% for associado in reuniao.presentes.all %}
+                        <li class="collection-item">
+                            {{ associado.nome }}
+                            {% for cargo in associado.cargos.all %}
+                                <span class="new badge" data-badge-caption="">{{ cargo.nome }}</span>
+                            {% endfor %}
+                        </li>
+                    {% empty %}
+                        <li class="collection-item">Nenhuma pessoa presente</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="section col s12">
+                <h5>Ata da Reunião</h5>
+                <textarea class="editor">
+                    {{ reuniao.ata }}
+                </textarea>
+            </div>
+        </div>
+        <div class="row">
+            {% include 'utilidades/para_topo.html' %}
+        </div>
+    </div>
+{% endblock %}

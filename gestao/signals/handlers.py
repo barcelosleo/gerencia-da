@@ -57,25 +57,32 @@ def deleta_foto_associado(sender, instance, **kwargs):
 
 @receiver(signals.post_save, sender=models.Diretor)
 def grupo_padrao_diretor(sender, instance, **kwargs):
-    grupo = Group.objects.get(name='Diretores')
-    if instance.is_staff:
+    grupo = Group.objects.get(pk=1)
+    if instance.is_staff and not instance.is_external:
+        instance.groups.add(grupo)
+    else:
+        instance.groups.remove(grupo)
+
+@receiver(signals.post_save, sender=models.Aluno)
+def grupo_padrao_aluno(sender, instance, **kwargs):
+    grupo = Group.objects.get(pk=2)
+    if not instance.is_staff and not instance.is_external:
         instance.groups.add(grupo)
     else:
         instance.groups.remove(grupo)
 
 @receiver(signals.post_save, sender=models.Egresso)
 def grupo_padrao_egresso(sender, instance, **kwargs):
-    grupo = Group.objects.get(name='Egressos')
-    if not instance.is_active:
+    grupo = Group.objects.get(pk=3)
+    if not instance.is_active and not instance.is_external:
         instance.groups.add(grupo)
     else:
         instance.groups.remove(grupo)
 
-
-@receiver(signals.post_save, sender=models.Aluno)
-def grupo_padrao_aluno(sender, instance, **kwargs):
-    grupo = Group.objects.get(name='Alunos')
-    if not instance.is_staff:
+@receiver(signals.post_save, sender=models.Externo)
+def grupo_padrao_usuario_externo(sender, instance, **kwargs):
+    grupo = Group.objects.get(pk=4)
+    if instance.is_external:
         instance.groups.add(grupo)
     else:
         instance.groups.remove(grupo)

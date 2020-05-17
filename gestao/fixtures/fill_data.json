@@ -35,59 +35,52 @@
         }
     },
     {
-        "model": "gestao.Cargo",
+        "model": "auth.group",
         "pk": 1,
         "fields": {
-            "nome": "Presidente",
-            "area_id": 1
+            "name": "Diretor"
         }
     },
     {
-        "model": "gestao.Cargo",
+        "model": "auth.group",
         "pk": 2,
         "fields": {
-            "nome": "Vice-Presidente",
-            "area_id": 1
+            "name": "Aluno"
         }
     },
     {
-        "model": "gestao.Cargo",
+        "model": "auth.group",
         "pk": 3,
         "fields": {
-            "nome": "Tesoureiro",
-            "area_id": 2
+            "name": "Egresso"
         }
     },
     {
-        "model": "gestao.Cargo",
+        "model": "auth.group",
         "pk": 4,
         "fields": {
-            "nome": "Comunicação",
-            "area_id": 5
+            "name": "Usuário Externo"
         }
     },
     {
-        "model": "gestao.Cargo",
+        "model": "auth.group",
         "pk": 5,
         "fields": {
-            "nome": "Eventos",
-            "area_id": 3
+            "name": "Presidente"
         }
     },
     {
-        "model": "gestao.Cargo",
+        "model": "auth.group",
         "pk": 6,
         "fields": {
-            "nome": "Secretário",
-            "area_id": 1
+            "name": "Vice-Presidente"
         }
     },
     {
-        "model": "gestao.Cargo",
+        "model": "auth.group",
         "pk": 7,
         "fields": {
-            "nome": "Acadêmico",
-            "area_id": 4
+            "name": "Tesoureiro"
         }
     },
     {
@@ -102,7 +95,8 @@
             "ano_matricula": "2018",
             "previsao_conclusao": "2022",
             "is_active": true,
-            "is_staff": true
+            "is_staff": true,
+            "groups": [1]
         }
     },
     {
@@ -117,7 +111,8 @@
             "ano_matricula": "2018",
             "previsao_conclusao": "2022",
             "is_active": true,
-            "is_staff": true
+            "is_staff": true,
+            "groups": [1]
         }
     },
     {
@@ -132,7 +127,8 @@
             "ano_matricula": "2018",
             "previsao_conclusao": "2022",
             "is_active": true,
-            "is_staff": true
+            "is_staff": true,
+            "groups": [1]
         }
     },
     {
@@ -147,7 +143,8 @@
             "ano_matricula": "2018",
             "previsao_conclusao": "2022",
             "is_active": true,
-            "is_staff": true
+            "is_staff": true,
+            "groups": [1]
         }
     },
     {
@@ -162,7 +159,8 @@
             "ano_matricula": "2018",
             "previsao_conclusao": "2022",
             "is_active": true,
-            "is_staff": true
+            "is_staff": true,
+            "groups": [1]
         }
     },
     {
@@ -177,7 +175,8 @@
             "ano_matricula": "2018",
             "previsao_conclusao": "2022",
             "is_active": true,
-            "is_staff": true
+            "is_staff": true,
+            "groups": [1]
         }
     },
     {
@@ -192,7 +191,8 @@
             "ano_matricula": "2018",
             "previsao_conclusao": "2022",
             "is_active": true,
-            "is_staff": false
+            "is_staff": false,
+            "groups": [2]
         }
     },
     {
@@ -207,7 +207,8 @@
             "ano_matricula": "2018",
             "previsao_conclusao": "2022",
             "is_active": true,
-            "is_staff": false
+            "is_staff": false,
+            "groups": [2]
         }
     },
     {
@@ -222,7 +223,8 @@
             "ano_matricula": "2018",
             "previsao_conclusao": "2022",
             "is_active": false,
-            "is_staff": false
+            "is_staff": false,
+            "groups": [3]
         }
     }
 ]

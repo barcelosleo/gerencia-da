@@ -31,7 +31,7 @@
                 </div>
             </form>
             <div class="col s6">
-                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Egresso" href="{% url 'gestao-grupos-novo' %}"><i class="material-icons">add</i></a>
+                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Grupo" href="{% url 'gestao-grupos-novo' %}"><i class="material-icons">add</i></a>
             </div>
         </div>
         <div class="row">
@@ -53,10 +53,12 @@
                             <td>{{ group.user_set.count }}</td>
                             <td>{{ group.permissions.count }}</td>
                             <td>
-                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Egresso" href="{% url 'gestao-grupos-ver' pk=group.id %}"><i class="material-icons">remove_red_eye</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Egresso" href="{% url 'gestao-grupos-permissoes' pk=group.id %}"><i class="material-icons">pencil</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover Egresso" href="#confirmar-exclusao" data-modal-confirm-url="{% url 'gestao-grupos-remover' pk=group.id %}"><i class="material-icons">delete</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Egresso" href="{% url 'gestao-grupos-editar' pk=group.id %}"><i class="material-icons">edit</i></a>
+                                {% if group.id in grupos_padrao %}
+                                    <a class="btn-floating waves-effect waves-light tooltipped gray disabled" data-position="top" data-tooltip="Grupo não pode ser removido" href="#confirmar-exclusao"><i class="material-icons">delete</i></a>
+                                {% else %}
+                                    <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover Grupo" href="#confirmar-exclusao" data-modal-confirm-url="{% url 'gestao-grupos-remover' pk=group.id %}"><i class="material-icons">delete</i></a>
+                                {% endif %}
+                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Grupo" href="{% url 'gestao-grupos-editar' pk=group.id %}"><i class="material-icons">edit</i></a>
                             </td>
                         </tr>
                     {% empty %}

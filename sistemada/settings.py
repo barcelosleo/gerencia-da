@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'gestao',
     'financeiro',
     'eventos',
+    'siteda',
 ]
 
 MIDDLEWARE = [
@@ -152,5 +153,8 @@ COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_PRECOMPILERS = (
     ('text/es6', './node_modules/.bin/browserify {infile} -t babelify --outfile {outfile}'),
 )
+
+# ID dos grupos padrão do DA
+GESTAO_DEFAULT_GROUP_LIST = [1, 2, 3, 4]
 
 # COMPRESS_ENABLED = True

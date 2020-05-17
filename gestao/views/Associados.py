@@ -8,7 +8,7 @@ from django.views.generic.detail import DetailView
 from gestao import models
 from gestao import forms
 
-from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin
+from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
 
 class AssociadoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'associados/index.html'
@@ -29,25 +29,32 @@ class AssociadoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
         )
         return context
 
-class CriarAssociadoView(CreateView, GestaoRegrasMixin, GestaoContextMixin):
+class CriarAssociadoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'associados/novo.html'
     model = models.Associado
     form_class = forms.AssociadoForm
     success_url = reverse_lazy('gestao-associados')
+    permission_required = 'gestao.add_aluno'
 
-class EditarAssociadoView(UpdateView, GestaoRegrasMixin, GestaoContextMixin):
+class EditarAssociadoView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'associados/editar.html'
     model = models.Associado
     form_class = forms.AssociadoForm
     success_url = reverse_lazy('gestao-associados')
+    permission_required = 'gestao.change_aluno'
 
-class RemoverAssociadoView(DeleteView, GestaoRegrasMixin):
+class RemoverAssociadoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     model = models.Associado
     success_url = reverse_lazy('gestao-associados')
+    permission_required = 'gestao.delete_aluno'
 
     def get(self, request, *args, **kwargs):
+        if not self.has_permission():
+            return self.handle_no_permission()
+
         return self.post(request, *args, **kwargs)
 
-class VerAssociadoView(DetailView, GestaoRegrasMixin, GestaoContextMixin):
+class VerAssociadoView(DetailView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'associados/ver.html'
     model = models.Associado
+    permission_required = 'gestao.view_aluno'

@@ -1,12 +1,11 @@
 {% extends 'layouts/gestao.html' %}
 
-
 {% block conteudo_gestao %}
     <!-- Modal Structure -->
     <div id="confirmar-exclusao" class="modal">
         <div class="modal-content">
-            <h4>Confirmar Exclusão de Grupo?</h4>
-            <p>Ao confirmar a exclusão do grupo, todos os registros vinculados serão removidos!</p>
+            <h4>Confirmar Exclusão de Reunião?</h4>
+            <p>Ao confirmar a exclusão da reunião, todos os registros vinculados serão removidos!</p>
         </div>
         <div class="modal-footer">
             <a href="#!" id="botao-confirmacao" class="modal-close waves-effect waves-green green btn-flat">Confirmar</a>
@@ -15,10 +14,7 @@
     </div>
     <div class="col s12">
         <div class="row">
-            <div class="col s10"><h5>Permissões do Grupo: {{ group.name }}</h5></div>
-            <div class="col s2 right-align">
-                <a class="btn light-blue" href="{% url 'gestao-grupos' %}" style="margin-top: 16.4px">Voltar</a>
-            </div>
+            <h5>Atas de Reunião do Diretório</h5>
         </div>
         <div class="row right-align">
             <form method="GET" class="col s6">
@@ -34,7 +30,7 @@
                 </div>
             </form>
             <div class="col s6">
-                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Egresso" href="{% url 'gestao-grupos-novo' %}"><i class="material-icons">add</i></a>
+                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Link de Cadastro" href="{% url 'gestao-links-cadastro-novo' %}"><i class="material-icons">add</i></a>
             </div>
         </div>
         <div class="row">
@@ -42,28 +38,30 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Nome</th>
-                        <th>Content Type</th>
+                        <th>Data Criação</th>
+                        <th>Expiração</th>
+                        <th>Usado</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for permission in permission_list %}
+                    {% for link in linkcadastro_list %}
                         <tr>
-                            <td>{{ permission.id }}</td>
-                            <td>{{ permission.name }}</td>
-                            <td>{{ permission.content_type.name }}</td>
+                            <td><a href="{% url 'site-cadastro-associado' pk=link.id %}">{{ request.scheme }}://{{ request.get_host }}{% url 'site-cadastro-associado' pk=link.id %}</a></td>
+                            <td>{{ link.data|date:'d/m/Y H:i:s' }}</td>
+                            <td>{{ link.validade|date:'d/m/Y H:i:s' }}</td>
+                            <td>{% if link.usado %}<i class="small material-icons">check_circle</i>{% else %}<i class="small material-icons">cancel</i>{% endif %}</td>
                             <td>
-                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Egresso" href="{% url 'gestao-grupos-ver' pk=permission.id %}"><i class="material-icons">remove_red_eye</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover Egresso" href="#confirmar-exclusao" data-modal-confirm-url="{% url 'gestao-grupos-remover' pk=permission.id %}"><i class="material-icons">delete</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Egresso" href="{% url 'gestao-grupos-editar' pk=permission.id %}"><i class="material-icons">edit</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Link de Cadastro" href="{% url 'gestao-links-cadastro-ver' pk=link.id %}"><i class="material-icons">remove_red_eye</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger {% if link.usado %}disabled{% endif %}" data-position="top" data-tooltip="Remover Link de Cadastro" data-modal-confirm-url="{% url 'gestao-links-cadastro-remover' pk=link.id %}" href="#confirmar-exclusao"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating waves-effect waves-light tooltipped blue {% if link.usado %}disabled{% endif %}" data-position="top" data-tooltip="Editar Link de Cadastro" href="{% url 'gestao-links-cadastro-editar' pk=link.id %}"><i class="material-icons">edit</i></a>
                             </td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="8">
+                            <td colspan="5">
                                 <div class="center-align">
-                                    <i>Nenhum grupo</i>
+                                    <i>Nenhuma Reunião</i>
                                 </div>
                             </td>
                         </tr>
@@ -73,9 +71,6 @@
         </div>
         <div class="row center-align">
             {% include 'utilidades/paginacao.html' %}
-        </div>
-        <div class="row">
-            {% include 'utilidades/para_topo.html' %}
         </div>
     </div>
 {% endblock %}

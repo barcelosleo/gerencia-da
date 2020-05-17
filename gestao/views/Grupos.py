@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.db.models import Q
 
@@ -8,7 +9,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.models import Group, Permission
 
 from gestao import forms
-from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin
+from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
 
 class GrupoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'grupos/index.html'
@@ -22,41 +23,27 @@ class GrupoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
         )
         return context
 
-class CriarGrupoView(CreateView, GestaoRegrasMixin, GestaoContextMixin):
+class CriarGrupoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'grupos/novo.html'
     model = Group
     form_class = forms.GrupoForm
     success_url = reverse_lazy('gestao-grupos')
+    permission_required = 'auth.create_group'
 
-class EditarGrupoView(UpdateView, GestaoRegrasMixin, GestaoContextMixin):
+class EditarGrupoView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'grupos/editar.html'
     model = Group
     form_class = forms.GrupoForm
     success_url = reverse_lazy('gestao-grupos')
+    permission_required = 'auth.change_group'
 
-class RemoverGrupoView(DeleteView, GestaoRegrasMixin):
+class RemoverGrupoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     model = Group
     success_url = reverse_lazy('gestao-grupos')
+    permission_required = 'auth.delete_group'
 
     def get(self, request, *args, **kwargs):
+        if not self.has_permission():
+            return self.handle_no_permission()
+
         return self.post(request, *args, **kwargs)
-
-class VerGrupoView(DetailView, GestaoRegrasMixin, GestaoContextMixin):
-    template_name = 'grupos/ver.html'
-    model = Group
-
-class GerenciarPermissoesView(ListView, GestaoRegrasMixin, GestaoContextMixin):
-    template_name = 'grupos/gerenciar_permissoes.html'
-    model = Permission
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        context = Group.objects.get(pk=pk).permissions.all()
-        return context
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pk = self.kwargs.get('pk')
-        context['group'] = Group.objects.get(pk=pk)
-        return context
-

@@ -20,10 +20,12 @@ class LoginGestor(LoginView):
     }
 
     def get_success_url(self):
-        diretorio = models.DiretorioAcademico.objects.get(pk=1)
-        if diretorio:
+        try:
+            diretorio = models.DiretorioAcademico.objects.get(pk=1)
             self.request.session['sigla_diretorio'] = diretorio.sigla
             self.request.session['logo_diretorio'] = diretorio.logo.url
+        except models.DiretorioAcademico.DoesNotExist:
+            pass
         return super().get_success_url()
 
 
