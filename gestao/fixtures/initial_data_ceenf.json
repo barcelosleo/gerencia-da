@@ -1,0 +1,132 @@
+[
+    {
+        "model": "gestao.Area",
+        "pk": 1,
+        "fields": {
+            "nome": "Direção Administrativa"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 2,
+        "fields": {
+            "nome": "Financeiro"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 3,
+        "fields": {
+            "nome": "Eventos"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 4,
+        "fields": {
+            "nome": "Acadêmico"
+        }
+    },
+    {
+        "model": "gestao.Area",
+        "pk": 5,
+        "fields": {
+            "nome": "Comunicação"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 1,
+        "fields": {
+            "name": "Diretor"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 2,
+        "fields": {
+            "name": "Aluno"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 3,
+        "fields": {
+            "name": "Egresso"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 4,
+        "fields": {
+            "name": "Usuário Externo"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 5,
+        "fields": {
+            "name": "Presidente"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 6,
+        "fields": {
+            "name": "Vice-Presidente"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 7,
+        "fields": {
+            "name": "Tesoureiro"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 8,
+        "fields": {
+            "name": "Secretário"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 9,
+        "fields": {
+            "name": "Eventos"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 10,
+        "fields": {
+            "name": "Comunicação"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 11,
+        "fields": {
+            "name": "Acadêmico"
+        }
+    },
+    {
+        "model": "gestao.Associado",
+        "pk": 1,
+        "fields": {
+            "nome": "Leonardo",
+            "sobrenome": "Machado Barcelos",
+            "email": "leobarcelos12@gmail.com",
+            "telefone": "(55) 99697-4420",
+            "matricula": "00302060",
+            "ano_matricula": "2018",
+            "previsao_conclusao": "2022",
+            "is_active": true,
+            "is_staff": true,
+            "is_superuser": true,
+            "password": "pbkdf2_sha256$180000$OqBpqtUvO637$93SXhS+qFUI6YPUI/3L5bSUpcgVmgRpPjS/mnBs977Q=",
+            "groups": [1, 7]
+        }
+    }
+]
