@@ -3,6 +3,7 @@ Sistema para gerenciamento de Diretórios Acadêmicos
 
 ## TODO ##
 ### Misc ###
+- [ ] Configurar ordem nas paginações
 - [ ] Configuração padrão de DA(1º acesso no sistema)
     - [ ] Configuração de Nome, Sigla e Logo
     - [ ] Configuração de Permissões dos Grupos padrão(Alunos, Diretores e Egressos)
