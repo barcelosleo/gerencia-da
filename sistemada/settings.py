@@ -145,7 +145,7 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
-NODE_PACKAGE_JSON = os.path.join(BASE_DIR, "package.json")
+NODE_PACKAGE_JSON = os.path.join(BASE_DIR, "_package.json")
 
 NODE_MODULES_ROOT = os.path.join(BASE_DIR, "node_modules")
 
