@@ -145,7 +145,7 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
-NODE_PACKAGE_JSON = os.path.join(BASE_DIR, "_package.json")
+NODE_PACKAGE_JSON = os.path.join(BASE_DIR, "package.json")
 
 NODE_MODULES_ROOT = os.path.join(BASE_DIR, "node_modules")
 
@@ -159,6 +159,8 @@ COMPRESS_PRECOMPILERS = (
 GESTAO_DEFAULT_GROUP_LIST = [1, 2, 3, 4]
 
 COMPRESS_ENABLED = True
+
+COMPRESS_OFFLINE = True
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
