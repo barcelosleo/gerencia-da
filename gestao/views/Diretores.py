@@ -15,17 +15,25 @@ class DiretorListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'diretores/index.html'
     model = models.Diretor
     paginate_by = 5
+    ordering = ('id',)
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
-        context = models.Diretor.objects.filter(
+        queryset = models.Diretor.objects.filter(
             Q(nome__startswith=termo_pesquisa) |
             Q(sobrenome__startswith=termo_pesquisa) |
             Q(email__startswith=termo_pesquisa) |
             Q(telefone__startswith=termo_pesquisa) |
             Q(matricula__startswith=termo_pesquisa)
         )
-        return context
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
 class CriarDiretorView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'diretores/novo.html'

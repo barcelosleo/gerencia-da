@@ -7,7 +7,7 @@ Sistema para gerenciamento de Diretórios Acadêmicos
 - [ ] Configuração padrão de DA(1º acesso no sistema)
     - [ ] Configuração de Nome, Sigla e Logo
     - [ ] Configuração de Permissões dos Grupos padrão(Alunos, Diretores e Egressos)
-    - Criação de Grupos que representam os cargos dentro do diretório(Presidente, Vice-Presidente, etc)
+    - [ ] Criação de Grupos que representam os cargos dentro do diretório(Presidente, Vice-Presidente, etc)
 ### Gestão ###
 - [x] Limitar acesso por grupo Diretores ou Superusuário
 - [ ] Limitar ações no sistema, levando em conta as permissões do grupo do associado.
@@ -35,6 +35,8 @@ Sistema para gerenciamento de Diretórios Acadêmicos
     - [x] Remover Ata de Reunião
     - [x] Editar Ata de Reunião
     - [x] Criar Ata de Reunião
+- [ ] Marcar Reunião
+    - [ ] Adicionar lembretes de reunião
 - [x] Configurações do DA(Nome, logo, etc)
 - [ ] Cadastro de Interessados no Curso(tipo lead)
     - [ ] Remover Interessado

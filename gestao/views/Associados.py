@@ -14,10 +14,11 @@ class AssociadoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'associados/index.html'
     model = models.Associado
     paginate_by = 5
+    ordering = ('id',)
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
-        context = models.Associado.objects.filter(
+        queryset = models.Associado.objects.filter(
             Q(is_active=True) &
             (
                 Q(nome__startswith=termo_pesquisa) |
@@ -27,7 +28,14 @@ class AssociadoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
                 Q(matricula__startswith=termo_pesquisa)
             )
         )
-        return context
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
 class CriarAssociadoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'associados/novo.html'

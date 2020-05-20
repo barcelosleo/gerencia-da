@@ -15,9 +15,7 @@ class LoginGestor(LoginView):
     template_name = 'gestor/login.html'
     form = AuthenticationForm
     redirect_authenticated_user = True
-    extra_context = {
-        'next': reverse_lazy('gestao-administrativo'),
-    }
+    success_url = reverse_lazy('gestao-administrativo')
 
     def get_success_url(self):
         try:
@@ -26,7 +24,8 @@ class LoginGestor(LoginView):
             self.request.session['logo_diretorio'] = diretorio.logo.url
         except models.DiretorioAcademico.DoesNotExist:
             pass
-        return super().get_success_url()
+
+        return self.success_url
 
 
 class LogoutGestor(LogoutView):

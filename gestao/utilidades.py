@@ -50,7 +50,7 @@ areas = [
             SubFerramenta('gestao-diretores-ver'),
             SubFerramenta('gestao-diretores-remover'),
         ]),
-        Ferramenta('Link de Cadastro de Associado', 'gestao-links-cadastro', 'people', [
+        Ferramenta('Link de Cadastro', 'gestao-links-cadastro', 'contacts', [
             SubFerramenta('gestao-links-cadastro-novo'),
             SubFerramenta('gestao-links-cadastro-editar'),
             SubFerramenta('gestao-links-cadastro-ver'),

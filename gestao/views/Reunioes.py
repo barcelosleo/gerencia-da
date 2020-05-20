@@ -15,13 +15,22 @@ class ReuniaoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'atas/index.html'
     model = models.Reuniao
     paginate_by = 5
+    ordering = ('id',)
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
-        context = models.Reuniao.objects.filter(
+
+        queryset = models.Reuniao.objects.filter(
             Q(data__startswith=termo_pesquisa) | Q(titulo__startswith=termo_pesquisa)
         )
-        return context
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
 class CriarReuniaoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'atas/nova.html'

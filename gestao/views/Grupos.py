@@ -15,13 +15,21 @@ class GrupoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'grupos/index.html'
     model = Group
     paginate_by = 5
+    ordering = ('id',)
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
-        context = Group.objects.filter(
+        queryset = Group.objects.filter(
             Q(name__startswith=termo_pesquisa)
         )
-        return context
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
 class CriarGrupoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'grupos/novo.html'

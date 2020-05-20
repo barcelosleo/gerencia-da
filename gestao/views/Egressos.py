@@ -14,17 +14,25 @@ class EgressoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'egressos/index.html'
     model = models.Egresso
     paginate_by = 5
+    ordering = ('id',)
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
-        context = models.Egresso.objects.filter(
+        queryset = models.Egresso.objects.filter(
             Q(nome__startswith=termo_pesquisa) |
             Q(sobrenome__startswith=termo_pesquisa) |
             Q(email__startswith=termo_pesquisa) |
             Q(telefone__startswith=termo_pesquisa) |
             Q(matricula__startswith=termo_pesquisa)
         )
-        return context
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
 class CriarEgressoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'egressos/novo.html'

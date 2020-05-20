@@ -15,13 +15,21 @@ class LinkCadastroListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'links_cadastro/index.html'
     model = models.LinkCadastro
     paginate_by = 5
+    ordering = ('usado', '-validade', '-data', )
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
-        context = models.LinkCadastro.objects.filter(
+        queryset = models.LinkCadastro.objects.filter(
             Q(id__startswith=termo_pesquisa)
         )
-        return context
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
 class CriarLinkCadastroView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'links_cadastro/novo.html'
