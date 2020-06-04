@@ -1,4 +1,3 @@
-from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.db.models import Q
 
@@ -6,7 +5,8 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
+from django.conf import settings
 
 from gestao import forms
 from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
@@ -16,6 +16,11 @@ class GrupoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     model = Group
     paginate_by = 5
     ordering = ('id',)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['grupos_padrao'] = settings.GESTAO_DEFAULT_GROUP_LIST
+        return context
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
@@ -51,7 +56,7 @@ class RemoverGrupoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, Ges
     permission_required = 'auth.delete_group'
 
     def get(self, request, *args, **kwargs):
-        if not self.has_permission():
+        if not self.has_permission() or kwargs.get('pk') in settings.GESTAO_DEFAULT_GROUP_LIST:
             return self.handle_no_permission()
 
         return self.post(request, *args, **kwargs)

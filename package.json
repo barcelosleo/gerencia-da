@@ -13,6 +13,7 @@
     "@ckeditor/ckeditor5-upload": "^19.0.0",
     "jquery": "^3.5.1",
     "jquery-mask-plugin": "^1.14.16",
+    "jquery-maskmoney": "^3.0.2",
     "materialize-css": "^1.0.0-rc.2"
   },
   "devDependencies": {

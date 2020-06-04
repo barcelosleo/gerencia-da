@@ -1,13 +1,10 @@
-from django.shortcuts import render, redirect, reverse
 from django.urls import reverse_lazy
 
-from django.views import View
 from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import AuthenticationForm
 
 from gestao import models
-from gestao import forms
 
 from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin
 

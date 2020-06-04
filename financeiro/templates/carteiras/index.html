@@ -1,0 +1,60 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load numeros %}
+
+{% block conteudo_gestao %}
+    {% include 'utilidades/modal_confirmacao.html' with nome_model="Carteira" %}
+
+    <div class="col s12">
+        <div class="row">
+            <h5>Carteiras Financeiras do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Nova Carteira Financeira" add_url="financeiro-carteiras-nova"%}
+            </div>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Carteira</th>
+                        <th>Saldo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for carteira in carteira_list %}
+                        <tr>
+                            <td>{{ carteira.id }}</td>
+                            <td>{{ carteira.nome }}</td>
+                            <td>R$ {{ carteira.saldo|dinheiro }}</td>
+                            <td>
+                                {% include 'utilidades/acoes.html' with modulo="financeiro-carteiras" pk_registro=carteira.id model_name="Carteira" %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4">
+                                <div class="center-align">
+                                    <i>Nenhuma carteira financeira cadastrada</i>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% include 'utilidades/paginacao.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'utilidades/modal_confirmacao_script.html' %}
+{% endblock %}

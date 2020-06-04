@@ -1,0 +1,10 @@
+<div id="confirmar-{{ tipo_modal|default:'exclusao' }}" class="modal">
+    <div class="modal-content">
+        <h4>Confirmar {{ tipo_modal|title|default:'Exclusão' }} de {{ nome_model|title }}?</h4>
+        <p>Ao confirmar a {{ tipo_modal|default:'exclusão'}} de {{ nome_model }}, todos os vinculos serão removidos!</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" id="botao-confirmacao" class="modal-close waves-effect waves-green green btn-flat">Confirmar</a>
+        <a href="#!" class="modal-close waves-effect waves-orange orange btn-flat">Cancelar</a>
+    </div>
+</div>

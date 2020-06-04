@@ -1,7 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.views.generic.base import ContextMixin
 from django.urls import resolve
-from django.conf import settings
 from django.shortcuts import render
 
 from gestao.utilidades import areas
@@ -12,7 +11,6 @@ class GestaoContextMixin(ContextMixin):
         context['areas'] = areas
         context['area_ferramentas'] = areas[0].ferramentas
         context['nome_url'] = resolve(self.request.path_info).url_name
-        context['grupos_padrao'] = settings.GESTAO_DEFAULT_GROUP_LIST
         context['termo'] = self.request.GET.get('termo', '')
         return context
 

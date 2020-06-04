@@ -23,6 +23,11 @@
       <link href="{% static 'material/css/jquery.datetimepicker.css' %}" rel="stylesheet">
 
       <!-- Bloco de Estilos -->
+      <style>
+        form .input-field .help-block, form .input-field .error {
+          top: 0
+        }
+      </style>
       {% block styles %}{% endblock %}
     {% endcompress %}
   </head>
@@ -39,6 +44,7 @@
       <!-- Arquivos necessários para o Materialize -->
       <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
       <script src="{% static 'jquery-mask-plugin/dist/jquery.mask.min.js' %}"></script>
+      <script src="{% static 'jquery-maskmoney/dist/jquery.maskMoney.min.js' %}"></script>
       <script src="{% static 'materialize-css/dist/js/materialize.min.js' %}"></script>
       <script src="{% static '@ckeditor/ckeditor5-build-classic/build/ckeditor.js' %}"></script>
       <script src="{% static '@ckeditor/ckeditor5-build-classic/build/translations/pt-br.js' %}"></script>
@@ -53,6 +59,11 @@
         $(document).ready(function(){
           $('.tooltipped').tooltip();
           $('.modal').modal();
+          $('.mascara-dinheiro').maskMoney({
+            prefix: "R$ ",
+            decimal: ",",
+            thousands: "."
+          });
           $('.mascara-cpf').mask('000.000.000-00');
           $('.mascara-telefone').mask('(00) 0000-00009').focusout(function(event) {
             var target, phone, element;

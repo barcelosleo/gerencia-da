@@ -63,7 +63,46 @@ areas = [
         ]),
         Ferramenta('Config. Diretório', 'gestao-config-diretorio', 'settings'),
     ]),
+    Area('Financeiro', 'financeiro-inicio', [
+        Ferramenta('Início', 'financeiro-inicio', 'home'),
+        Ferramenta('Vendas', 'financeiro-vendas', 'shopping_cart', [
+            SubFerramenta('financeiro-vendas-nova'),
+            SubFerramenta('financeiro-vendas-editar'),
+            SubFerramenta('financeiro-vendas-remover'),
+            SubFerramenta('financeiro-vendas-ver'),
+            SubFerramenta('financeiro-vendas-parcelas'),
+        ]),
+        Ferramenta('Entradas Financeiras', 'financeiro-entradas', 'archive', [
+            SubFerramenta('financeiro-entradas-nova'),
+            SubFerramenta('financeiro-entradas-editar'),
+            SubFerramenta('financeiro-entradas-remover'),
+            SubFerramenta('financeiro-entradas-ver'),
+        ]),
+        Ferramenta('Saídas Financeiras', 'financeiro-saidas', 'unarchive', [
+            SubFerramenta('financeiro-saidas-nova'),
+            SubFerramenta('financeiro-saidas-editar'),
+            SubFerramenta('financeiro-saidas-remover'),
+            SubFerramenta('financeiro-saidas-ver'),
+        ]),
+        Ferramenta('Transferências Financeiras', 'financeiro-transferencias', 'repeat', [
+            SubFerramenta('financeiro-transferencias-nova'),
+            SubFerramenta('financeiro-transferencias-editar'),
+            SubFerramenta('financeiro-transferencias-remover'),
+            SubFerramenta('financeiro-transferencias-ver'),
+        ]),
+        Ferramenta('Produtos', 'financeiro-produtos', 'shopping_cart', [
+            SubFerramenta('financeiro-produtos-novo'),
+            SubFerramenta('financeiro-produtos-editar'),
+            SubFerramenta('financeiro-produtos-remover'),
+            SubFerramenta('financeiro-produtos-ver'),
+        ]),
+        Ferramenta('Carteiras', 'financeiro-carteiras', 'markunread_mailbox', [
+            SubFerramenta('financeiro-carteiras-nova'),
+            SubFerramenta('financeiro-carteiras-editar'),
+            SubFerramenta('financeiro-carteiras-remover'),
+            SubFerramenta('financeiro-carteiras-ver'),
+        ]),
+    ]),
     Area('Comunicação', 'gestao-logout', []),
-    Area('Financeiro', 'gestao-logout', []),
     Area('Eventos', 'gestao-logout', []),
 ]

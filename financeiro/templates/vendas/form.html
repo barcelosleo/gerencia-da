@@ -1,0 +1,175 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load material_form %}
+{% load numeros %}
+
+{% block styles_gestao %}
+    <style>
+        .quantidades-produtos a.btn-floating, .quantidades-produtos a.btn-small {
+            margin-top: 20px;
+        }
+        .produto-form .checkbox-field {
+            margin-top: 35px;
+        }
+    </style>
+{% endblock %}
+
+{% block conteudo_gestao %}
+    <div id="form-produtos" style="display:none;">
+        <div class="produto-form">
+            {% form form=venda_produto_formset.empty_form %}{% endform %}
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <h5>{{ action|default:"Nova" }} Venda do Diretório Acadêmico</h5>
+            {% if venda.finalizada %}
+                <blockquote>
+                    Não é possível alterar detalhes da venda, pois se trata de uma venda finalizada!
+                </blockquote>
+            {% elif venda.entradas.count > 0 %}
+                <blockquote>
+                    Não é possível alterar o desconto da venda, pois as entradas financeiras já foram geradas!
+                </blockquote>
+            {% endif %}
+        </div>
+        <div class="row">
+            <form class="col s12" method="POST">
+                {% csrf_token %}
+                {% form form=form %}{% endform %}
+                <div class="row quantidades-produtos">
+                    <div class="row">
+                        <div class="col s10">
+                            <h5>Produtos</h5>
+                        </div>
+                        {% if action != 'Editar' %}
+                            <div class="col s1">
+                                <a class="btn-floating btn-small waves-effect waves-light tooltipped red remover" data-position="left" data-tooltip="Remover último produto"><i class="material-icons">exposure_neg_1</i></a>
+                            </div>
+                            <div class="col s1">
+                                <a class="btn-floating btn-small waves-effect waves-light tooltipped blue adicionar" data-position="left" data-tooltip="Adicionar produto"><i class="material-icons">exposure_plus_1</i></a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col s12">
+                        {% if venda.entradas.count > 0 %}
+                            <div class="row">
+                                <blockquote>
+                                    Não é possível alterar detalhes dos produtos da venda, pois as entradas financeiras já foram geradas!
+                                </blockquote>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Preço</th>
+                                        <th>Quantidade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for venda_produto in venda.venda_produtos %}
+                                        <tr>
+                                            <td>{{ venda_produto.produto.nome }}</td>
+                                            <td>R$ {{ venda_produto.produto.preco|dinheiro }}</td>
+                                            <td>{{ venda_produto.quantidade }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            {{ venda_produto_formset.management_form }}
+                            {% for form_produto in venda_produto_formset.forms %}
+                                <div class="produto-form">
+                                    {% form form=form_produto %}{% endform %}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <br>
+                </div>
+                <div class="row">
+                    <button type="submit" name="_submit" class="btn green">Próximo</button>
+                    <a class="btn light-blue" href="{% url 'financeiro-vendas' %}">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            function botoesSetUp() {
+                $('.diminuir-produto').off('click').click(function() {
+                    var $quantidade = $($(this).parents('.row')[1]).find('.quantidade-produto')
+                    var quantidade = parseInt($quantidade.val())
+                    if (quantidade > 1) {
+                        $quantidade.val(quantidade - 1)
+                    }
+                });
+                $('.somar-produto').off('click').click(function() {
+                    var $quantidade = $($(this).parents('.row')[1]).find('.quantidade-produto')
+                    var quantidade = parseInt($quantidade.val())
+                    $quantidade.val(quantidade + 1)
+                });
+            }
+            function checkProdutos() {
+                var minForms = parseInt($('#id_vendaproduto_set-MIN_NUM_FORMS').val())
+                var maxForms = parseInt($('#id_vendaproduto_set-MAX_NUM_FORMS').val())
+                var totalForms = parseInt($('#id_vendaproduto_set-TOTAL_FORMS').val())
+
+                if (totalForms == minForms) {
+                    $('.remover').addClass('disabled')
+                } else {
+                    $('.remover').removeClass('disabled')
+                }
+
+                if (totalForms == maxForms) {
+                    $('.adicionar').addClass('disabled')
+                } else {
+                    $('.adicionar').removeClass('disabled')
+                }
+            }
+            $('.diminuir-produto').replaceWith('<a class="btn-floating btn-small waves-effect waves-light tooltipped orange diminuir-produto" data-position="top" data-tooltip="Remover Produto"><i class="material-icons">remove</i></a>')
+            $('.somar-produto').replaceWith('<a class="btn-floating btn-small waves-effect waves-light tooltipped green somar-produto" data-position="top" data-tooltip="Adicionar Produto"><i class="material-icons">add</i></a>')
+
+            botoesSetUp();
+            checkProdutos();
+
+            $('.remover').click(function() {
+                var $minForms = $('#id_vendaproduto_set-MIN_NUM_FORMS')
+                var $totalForms = $('#id_vendaproduto_set-TOTAL_FORMS')
+
+                var minForms = parseInt($minForms.val())
+                var totalForms = parseInt($totalForms.val())
+
+                if (totalForms > minForms) {
+                    $totalForms.val(totalForms - 1)
+                    $('.produto-form:last').remove()
+                    checkProdutos()
+                }
+            });
+            $('.adicionar').click(function() {
+                var $maxForms = $('#id_vendaproduto_set-MAX_NUM_FORMS')
+                var $totalForms = $('#id_vendaproduto_set-TOTAL_FORMS')
+
+                var maxForms = parseInt($maxForms.val())
+                var totalForms = parseInt($totalForms.val())
+
+                if (totalForms < maxForms) {
+                    $totalForms.val(totalForms + 1)
+                    // Gambiarra pra funcionar o copy do campo de produto
+                    $('#id_vendaproduto_set-__prefix__-produto').formSelect();
+                    $('#id_vendaproduto_set-__prefix__-produto').formSelect('destroy');
+                    $novoProduto = $($('#form-produtos').html().replace(/__prefix__/g, totalForms))
+                    $novoProduto.find('.dropdown-trigger').data('target', '')
+                    $('.quantidades-produtos > .col').append($novoProduto)
+                    botoesSetUp()
+                    checkProdutos()
+                }
+            });
+        });
+    </script>
+{% endblock %}

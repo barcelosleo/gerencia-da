@@ -1,0 +1,71 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load numeros %}
+
+{% block conteudo_gestao %}
+    {% include 'utilidades/modal_confirmacao.html' with nome_model="Venda" %}
+
+    <div class="col s12">
+        <div class="row">
+            <h5>Vendas do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Nova Venda Financeira" add_url="financeiro-vendas-nova"%}
+            </div>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Associado</th>
+                        <th>Total</th>
+                        <th>Desconto</th>
+                        <th>Parcelas</th>
+                        <th>Produtos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venda in venda_list %}
+                        <tr>
+                            <td>{{ venda.id }}</td>
+                            <td>{% if venda.associado %}{{ venda.associado.nome_completo }}{% else %}<i>-</i>{% endif %}</td>
+                            <td>R$ {{ venda.total|dinheiro }}</td>
+                            <td>R$ {{ venda.desconto|dinheiro }}</td>
+                            <td>{{ venda.entradas.count }}</td>
+                            <td>
+                                {% for venda_produto in venda.venda_produtos %}
+                                    <i>{{ venda_produto.quantidade }}x</i> R$ {{ venda_produto.produto.preco|dinheiro }} - {{ venda_produto.produto.nome }}
+                                    {% if not forloop.last %}<br>{% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% include 'utilidades/acoes.html' with modulo="financeiro-vendas" pk_registro=venda.id model_name="Venda" %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="center-align">
+                                    <i>Nenhuma venda cadastrada</i>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% include 'utilidades/paginacao.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'utilidades/modal_confirmacao_script.html' %}
+{% endblock %}

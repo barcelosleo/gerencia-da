@@ -1,0 +1,44 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load material_form %}
+
+{% block conteudo_gestao %}
+    <div class="container">
+        <div class="row">
+            <h5>{{ action|default:"Novo" }} Produto do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            <form class="col s12" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% form form=form %}{% endform %}
+                <div id="infos_produto">
+                    {% form form=estoque_form %}{% endform %}
+                </div>
+                <div class="row">
+                    <button type="submit" name="_submit" class="btn green">Salvar</button>
+                    <a class="btn light-blue" href="{% url 'financeiro-produtos' %}">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            if ($('#id_servico').is(':checked')) {
+                $('#infos_produto').hide()
+                $('#id_foto_container').hide()
+            }
+            $('#id_servico').change(function() {
+                if (this.checked) {
+                    $('#id_foto_container').hide()
+                    $('#infos_produto').hide()
+                } else {
+                    $('#id_foto_container').show()
+                    $('#infos_produto').show()
+                }
+            })
+        });
+    </script>
+{% endblock %}

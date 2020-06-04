@@ -1,0 +1,12 @@
+<form>
+    <div class="row">
+        <div class="input-field col s10">
+            <i class="material-icons prefix">search</i>
+            <input type="text" id="termo-pesquisa" name="termo" value="{% if termo %}{{ termo }}{% endif %}">
+            <label for="termo-pesquisa">Pesquisar</label>
+        </div>
+        <div class="input-field col s2">
+            <button class="btn waves-effect waves-light tooltipped" data-position="right" data-tooltip="Pesquisar"><i class="material-icons">arrow_forward</i></button>
+        </div>
+    </div>
+</form>

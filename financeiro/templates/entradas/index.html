@@ -1,0 +1,64 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load numeros %}
+
+{% block conteudo_gestao %}
+    {% include 'utilidades/modal_confirmacao.html' with nome_model="Entrada Financeira" %}
+
+    <div class="col s12">
+        <div class="row">
+            <h5>Entradas Financeiras do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Nova Entrada Financeira" add_url="financeiro-entradas-nova"%}
+            </div>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Valor</th>
+                        <th>Descrição</th>
+                        <th>Data</th>
+                        <th>Carteira</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entrada in entradafinanceira_list %}
+                        <tr>
+                            <td>{{ entrada.id }}</td>
+                            <td>R$ {{ entrada.valor|dinheiro }}</td>
+                            <td>{{ entrada.descricao }}</td>
+                            <td>{{ entrada.data|date:"d/m/Y" }}</td>
+                            <td>{{ entrada.carteira.nome }}</td>
+                            <td>
+                                {% include 'utilidades/acoes.html' with modulo="financeiro-entradas" pk_registro=entrada.id model_name="Entrada Financeira" %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="center-align">
+                                    <i>Nenhuma entrada financeira cadastrada</i>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% include 'utilidades/paginacao.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'utilidades/modal_confirmacao_script.html' %}
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load numeros %}
+
+{% block conteudo_gestao %}
+    {% include 'utilidades/modal_confirmacao.html' with nome_model="Saída Financeira" %}
+
+    <div class="col s12">
+        <div class="row">
+            <h5>Saídas Financeiras do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Nova Saída Financeira" add_url="financeiro-saidas-nova"%}
+            </div>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Valor</th>
+                        <th>Descrição</th>
+                        <th>Data</th>
+                        <th>Carteira</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for saida in saidafinanceira_list %}
+                        <tr>
+                            <td>{{ saida.id }}</td>
+                            <td>R$ {{ saida.valor|dinheiro }}</td>
+                            <td>{{ saida.descricao }}</td>
+                            <td>{{ saida.data|date:"d/m/Y" }}</td>
+                            <td>{{ saida.carteira.nome }}</td>
+                            <td>
+                                {% include 'utilidades/acoes.html' with modulo="financeiro-saidas" pk_registro=saida.id model_name="Saída Financeira" %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="center-align">
+                                    <i>Nenhuma saída financeira cadastrada</i>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% include 'utilidades/paginacao.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'utilidades/modal_confirmacao_script.html' %}
+{% endblock %}

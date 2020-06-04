@@ -33,6 +33,14 @@ class Associado(AbstractBaseUser, PermissionsMixin):
 
     objects = managers.AssociadoManager()
 
+    @property
+    def nome_completo(self):
+        return f"{self.nome} {self.sobrenome}"
+
+    def __str__(self):
+        return f"{self.matricula} - {self.nome_completo}"
+
+
     class Meta:
         verbose_name = "Associado"
         verbose_name_plural = "Associados"

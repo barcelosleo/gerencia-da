@@ -1,0 +1,62 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load numeros %}
+
+{% block conteudo_gestao %}
+    {% include 'utilidades/modal_confirmacao.html' with nome_model="Produto" %}
+
+    <div class="col s12">
+        <div class="row">
+            <h5>Saídas Financeiras do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Novo Produto" add_url="financeiro-produtos-novo"%}
+            </div>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Valor</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in produto_list %}
+                        <tr>
+                            <td>{{ produto.id }}</td>
+                            <td>R$ {{ produto.preco|dinheiro }}</td>
+                            <td>{{ produto.nome }}</td>
+                            <td>{% if produto.servico %}<i>Serviço</i>{% else %}<i>Produto</i>{% endif %}</td>
+                            <td>
+                                {% include 'utilidades/acoes.html' with modulo="financeiro-produtos" pk_registro=produto.id model_name="Produto" %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="center-align">
+                                    <i>Nenhum produto cadastrado</i>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% include 'utilidades/paginacao.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'utilidades/modal_confirmacao_script.html' %}
+{% endblock %}

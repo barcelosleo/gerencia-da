@@ -1,0 +1,190 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load material_form %}
+{% load numeros %}
+
+{% block conteudo_gestao %}
+    <div id="form-parcelas" style="display: none;">
+        <div class="parcela-form">
+            {% form form=form.empty_form %}{% endform %}
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <h5>Finalização de venda {% if venda.associado %}para {{ venda.associado.nome_completo }}{% endif %}</h5>
+            <div class="divider"></div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <ul class="collection">
+                    {% for venda_produto in venda.venda_produtos %}
+                        <li class="collection-item">
+                            <i>{{ venda_produto.quantidade }}x</i> {{ venda_produto.produto.nome }}
+                            <span class="new badge grey" data-badge-caption="">R$ {{ venda_produto.total|dinheiro }}</span>
+                        </li>
+                    {% endfor %}
+                    <li class="collection-item">
+                        <strong>Total</strong>
+                        <span class="new badge blue" data-badge-caption="">R$ {{ venda.total|dinheiro }}</span>
+                    </li>
+                    <li class="collection-item">
+                        <strong>Desconto</strong>
+                        <span class="new badge orange" data-badge-caption="">R$ {{ venda.desconto|dinheiro }}</span>
+                    </li>
+                    <li class="collection-item">
+                        <strong>Total a cobrar</strong>
+                        <span class="new badge green" data-badge-caption="">R$ {{ venda.cobranca|dinheiro }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s10">
+                <h5>Parcelas</h5>
+            </div>
+            {% if venda.entradas.count == 0 %}
+                <div class="col s1">
+                    <a class="btn-floating btn-small waves-effect waves-light tooltipped red remover disabled" data-position="left" data-tooltip="Remover última parcela"><i class="material-icons">exposure_neg_1</i></a>
+                </div>
+                <div class="col s1">
+                    <a class="btn-floating btn-small waves-effect waves-light tooltipped blue adicionar" data-position="left" data-tooltip="Adicionar parcela"><i class="material-icons">exposure_plus_1</i></a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <form class="col s12" method="POST">
+                {% csrf_token %}
+                {% if form.non_form_errors %}
+                    <blockquote>
+                        <p class="red-text">{{ form.non_form_errors }}</p>
+                    </blockquote>
+                {% endif %}
+                {{ form.management_form }}
+                <div class="parcelas">
+                    {% for form_parcela in form %}
+                        <div class="parcela-form">
+                            {% form form=form_parcela %}{% endform %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="row">
+                    <div class="col s3">
+                        <h5>Total</h5>
+                    </div>
+                    <div class="col s9">
+                        <p id="soma-parcelas">R$ {{ venda.cobranca|dinheiro }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <a class="btn orange" href="{% url 'financeiro-vendas-editar' pk=venda.id %}">Editar Venda</a>
+                    <button type="submit" name="_submit" class="btn green">Finalizar e Gerar Recibo</button>
+                    <a class="btn light-blue" href="{% url 'financeiro-vendas' %}">Sair</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        var totalCobranca = parseFloat("{{ venda.cobranca }}")
+        $(document).ready(function() {
+            function checkParcelas() {
+                var minForms = parseInt($('#id_vendaentrada_set-MIN_NUM_FORMS').val())
+                var maxForms = parseInt($('#id_vendaentrada_set-MAX_NUM_FORMS').val())
+                var totalForms = parseInt($('#id_vendaentrada_set-TOTAL_FORMS').val())
+
+                if (totalForms == minForms) {
+                    $('.remover').addClass('disabled')
+                } else {
+                    $('.remover').removeClass('disabled')
+                }
+
+                if (totalForms == maxForms) {
+                    $('.adicionar').addClass('disabled')
+                } else {
+                    $('.adicionar').removeClass('disabled')
+                }
+
+                $('.parcelas .mascara-dinheiro').change(somaParcelas);
+            }
+
+            function divideTotal() {
+                var $valor = $('.parcelas .mascara-dinheiro')
+                var totalForms = parseInt($('#id_vendaentrada_set-TOTAL_FORMS').val())
+
+                $valor
+                    .maskMoney('destroy')
+                    .each(function() {
+                        var valor = parseFloat(totalCobranca / totalForms).toFixed(2)
+                        // valor = String(valor).replace
+                        $(this).parent().find('label').addClass('active')
+                        $(this).val(valor)
+                    })
+                    .maskMoney({
+                        prefix: "R$ ",
+                        decimal: ",",
+                        thousands: "."
+                    })
+                    .trigger('mask');
+
+                somaParcelas()
+            }
+
+            function somaParcelas() {
+                var $valor = $('.parcelas .mascara-dinheiro')
+                var total = 0
+
+                $valor.each(function() {
+                    var valor = $(this).maskMoney('unmasked')[0]
+                    total += valor
+                })
+
+                total = new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(total)
+
+                $('#soma-parcelas').html(total)
+
+            }
+
+            checkParcelas();
+            somaParcelas();
+
+            if (parseInt($('#id_vendaentrada_set-TOTAL_FORMS').val()) == 1) {
+                divideTotal()
+            }
+
+            $('.remover').click(function() {
+                var $minForms = $('#id_vendaentrada_set-MIN_NUM_FORMS')
+                var $totalForms = $('#id_vendaentrada_set-TOTAL_FORMS')
+
+                var minForms = parseInt($minForms.val())
+                var totalForms = parseInt($totalForms.val())
+
+                if (totalForms > minForms) {
+                    $totalForms.val(totalForms - 1)
+                    $('.parcela-form:last').remove()
+                    checkParcelas()
+                    divideTotal()
+                }
+            });
+            $('.adicionar').click(function() {
+                var $maxForms = $('#id_vendaentrada_set-MAX_NUM_FORMS')
+                var $totalForms = $('#id_vendaentrada_set-TOTAL_FORMS')
+
+                var maxForms = parseInt($maxForms.val())
+                var totalForms = parseInt($totalForms.val())
+
+                if (totalForms < maxForms) {
+                    $totalForms.val(totalForms + 1)
+                    // Gambiarra pra funcionar o copy do campo de produto
+                    $('#id_vendaentrada_set-__prefix__-carteira').formSelect();
+                    $('#id_vendaentrada_set-__prefix__-carteira').formSelect('destroy');
+                    $novoProduto = $($('#form-parcelas').html().replace(/__prefix__/g, totalForms))
+                    $('.parcelas').append($novoProduto)
+                    checkParcelas()
+                    divideTotal()
+                }
+            });
+        });
+    </script>
+{% endblock %}
