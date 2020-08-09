@@ -1,0 +1,69 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load numeros %}
+
+{% block conteudo_gestao %}
+    {% include 'utilidades/modal_confirmacao.html' with nome_model="Carteira" %}
+
+    <div class="col s12">
+        <div class="row">
+            <h5>Temporadas de Encomenda do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Nova Carteira Financeira" add_url="financeiro-temporada-encomendas-nova"%}
+            </div>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Data de Início</th>
+                        <th>Data de Fim</th>
+                        <th>Produtos</th>
+                        <th>Ativa</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for temporada_encomenda in temporadaencomenda_list %}
+                        <tr>
+                            <td>{{ temporada_encomenda.id }}</td>
+                            <td>{{ temporada_encomenda.data|date:'d/m/Y' }}</td>
+                            <td>{{ temporada_encomenda.data_fim|date:'d/m/Y' }}</td>
+                            <td>
+                                {% for produto in temporada_encomenda.produtos.all %}
+                                    {{ produto }} {% if not forloop.last %},{% endif %}
+                                {% endfor %}
+
+                            </td>
+                            <td>{% if temporada_encomenda.ativa %}<i class="small material-icons">check_circle</i>{% else %}<i class="small material-icons">cancel</i>{% endif %}</td>
+                            <td>
+                                {% include 'utilidades/acoes.html' with modulo="financeiro-temporada-encomendas" pk_registro=temporada_encomenda.id model_name="Carteira" %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="center-align">
+                                    <i>Nenhuma temporada de encomenda cadastrada</i>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% include 'utilidades/paginacao.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'utilidades/modal_confirmacao_script.html' %}
+{% endblock %}

@@ -7,7 +7,9 @@ from financeiro.views import (
         SaidasFinanceiras,
         TransferenciasFinanceiras,
         Produtos,
-        Vendas
+        Vendas,
+        TemporadaEncomendas,
+        Encomendas,
     )
 
 urlpatterns = [
@@ -49,4 +51,16 @@ urlpatterns = [
     path('venda/<int:pk>/remover', Vendas.RemoverVendaView.as_view(), name="financeiro-vendas-remover"),
     path('venda/<int:pk>/ver', Vendas.VerVendaView.as_view(), name="financeiro-vendas-ver"),
     path('venda/<int:pk>/parcelas', Vendas.ParcelasVenda.as_view(), name="financeiro-vendas-parcelas"),
+
+    path('temporada-encomendas/', TemporadaEncomendas.ListTemporadaEncomendaView.as_view(), name="financeiro-temporada-encomendas"),
+    path('temporada-encomenda/', TemporadaEncomendas.CriarTemporadaEncomendaView.as_view(), name="financeiro-temporada-encomendas-nova"),
+    path('temporada-encomenda/<int:pk>/', TemporadaEncomendas.EditarTemporadaEncomendaView.as_view(), name="financeiro-temporada-encomendas-editar"),
+    path('temporada-encomenda/<int:pk>/remover', TemporadaEncomendas.RemoverTemporadaEncomendaView.as_view(), name="financeiro-temporada-encomendas-remover"),
+    path('temporada-encomenda/<int:pk>/ver', TemporadaEncomendas.VerTemporadaEncomendaView.as_view(), name="financeiro-temporada-encomendas-ver"),
+
+    path('encomendas/', Encomendas.ListEncomendaView.as_view(), name="financeiro-encomendas"),
+    path('encomenda/', Encomendas.CriarEncomendaView.as_view(), name="financeiro-encomendas-nova"),
+    path('encomenda/<int:pk>/', Encomendas.EditarEncomendaView.as_view(), name="financeiro-encomendas-editar"),
+    path('encomenda/<int:pk>/remover', Encomendas.RemoverEncomendaView.as_view(), name="financeiro-encomendas-remover"),
+    path('encomenda/<int:pk>/ver', Encomendas.VerEncomendaView.as_view(), name="financeiro-encomendas-ver"),
 ]

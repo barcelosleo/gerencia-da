@@ -34,7 +34,15 @@
                         <tr>
                             <td>{{ entrada.id }}</td>
                             <td>R$ {{ entrada.valor|dinheiro }}</td>
-                            <td>{{ entrada.descricao }}</td>
+                            <td>
+                                {% if entrada.e_venda %}
+                                    {% autoescape off %}
+                                        {{ entrada.descricao_para_venda }}
+                                    {% endautoescape %}
+                                {% else %}
+                                    {{ entrada.descricao }}
+                                {% endif %}
+                            </td>
                             <td>{{ entrada.data|date:"d/m/Y" }}</td>
                             <td>{{ entrada.carteira.nome }}</td>
                             <td>

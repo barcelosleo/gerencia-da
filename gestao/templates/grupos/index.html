@@ -17,21 +17,12 @@
         <div class="row">
             <h5>Grupos de Associados</h5>
         </div>
-        <div class="row right-align">
-            <form method="GET" class="col s6">
-                <div class="row">
-                    <div class="input-field col s10">
-                        <i class="material-icons prefix">search</i>
-                        <input type="text" id="termo-pesquisa" name="termo" value="{% if termo %}{{ termo }}{% endif %}">
-                        <label for="termo-pesquisa">Pesquisar</label>
-                    </div>
-                    <div class="input-field col s2">
-                        <button class="btn waves-effect waves-light tooltipped" data-position="right" data-tooltip="Pesquisar"><i class="material-icons">arrow_forward</i></button>
-                    </div>
-                </div>
-            </form>
-            <div class="col s6">
-                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Grupo" href="{% url 'gestao-grupos-novo' %}"><i class="material-icons">add</i></a>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Novo Grupo" add_url="gestao-grupos-novo" %}
             </div>
         </div>
         <div class="row">

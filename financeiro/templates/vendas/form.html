@@ -77,6 +77,9 @@
                                 </tbody>
                             </table>
                         {% else %}
+                            <blockquote>
+                                {{ venda_produto_formset.non_form_errors }}
+                            </blockquote>
                             {{ venda_produto_formset.management_form }}
                             {% for form_produto in venda_produto_formset.forms %}
                                 <div class="produto-form">

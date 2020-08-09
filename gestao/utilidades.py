@@ -65,7 +65,7 @@ areas = [
     ]),
     Area('Financeiro', 'financeiro-inicio', [
         Ferramenta('Início', 'financeiro-inicio', 'home'),
-        Ferramenta('Vendas', 'financeiro-vendas', 'shopping_cart', [
+        Ferramenta('Vendas', 'financeiro-vendas', 'shopping_basket', [
             SubFerramenta('financeiro-vendas-nova'),
             SubFerramenta('financeiro-vendas-editar'),
             SubFerramenta('financeiro-vendas-remover'),
@@ -89,6 +89,18 @@ areas = [
             SubFerramenta('financeiro-transferencias-editar'),
             SubFerramenta('financeiro-transferencias-remover'),
             SubFerramenta('financeiro-transferencias-ver'),
+        ]),
+        Ferramenta('Temporada de Encomendas', 'financeiro-temporada-encomendas', 'folder_special', [
+            SubFerramenta('financeiro-temporada-encomendas-nova'),
+            SubFerramenta('financeiro-temporada-encomendas-editar'),
+            SubFerramenta('financeiro-temporada-encomendas-remover'),
+            SubFerramenta('financeiro-temporada-encomendas-ver'),
+        ]),
+        Ferramenta('Encomendas', 'financeiro-encomendas', 'shopping_basket', [
+            SubFerramenta('financeiro-encomendas-nova'),
+            SubFerramenta('financeiro-encomendas-editar'),
+            SubFerramenta('financeiro-encomendas-remover'),
+            SubFerramenta('financeiro-encomendas-ver'),
         ]),
         Ferramenta('Produtos', 'financeiro-produtos', 'shopping_cart', [
             SubFerramenta('financeiro-produtos-novo'),

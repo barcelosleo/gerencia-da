@@ -11,6 +11,7 @@ from gestao import forms
 
 from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
 
+
 class ReuniaoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'atas/index.html'
     model = models.Reuniao
@@ -32,6 +33,7 @@ class ReuniaoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
 
         return queryset
 
+
 class CriarReuniaoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'atas/nova.html'
     model = models.Reuniao
@@ -39,12 +41,14 @@ class CriarReuniaoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, Ges
     success_url = reverse_lazy('gestao-reunioes')
     permission_required = 'gestao.add_reuniao'
 
+
 class EditarReuniaoView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'atas/editar.html'
     model = models.Reuniao
     form_class = forms.ReuniaoForm
     success_url = reverse_lazy('gestao-reunioes')
     permission_required = 'gestao.change_reuniao'
+
 
 class RemoverReuniaoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     model = models.Reuniao
@@ -56,6 +60,7 @@ class RemoverReuniaoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, G
             return self.handle_no_permission()
 
         return self.post(request, *args, **kwargs)
+
 
 class VerReuniaoView(DetailView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'atas/ver.html'

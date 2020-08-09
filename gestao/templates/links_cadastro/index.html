@@ -16,21 +16,12 @@
         <div class="row">
             <h5>Atas de Reunião do Diretório</h5>
         </div>
-        <div class="row right-align">
-            <form method="GET" class="col s6">
-                <div class="row">
-                    <div class="input-field col s10">
-                        <i class="material-icons prefix">search</i>
-                        <input type="text" id="termo-pesquisa" name="termo" value="{% if termo %}{{ termo }}{% endif %}">
-                        <label for="termo-pesquisa">Pesquisar</label>
-                    </div>
-                    <div class="input-field col s2">
-                        <button class="btn waves-effect waves-light tooltipped" data-position="right" data-tooltip="Pesquisar"><i class="material-icons">arrow_forward</i></button>
-                    </div>
-                </div>
-            </form>
-            <div class="col s6">
-                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Link de Cadastro" href="{% url 'gestao-links-cadastro-novo' %}"><i class="material-icons">add</i></a>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Novo Link de Cadastro" add_url="gestao-links-cadastro-novo" %}
             </div>
         </div>
         <div class="row">
@@ -52,9 +43,11 @@
                             <td>{{ link.validade|date:'d/m/Y H:i:s' }}</td>
                             <td>{% if link.usado %}<i class="small material-icons">check_circle</i>{% else %}<i class="small material-icons">cancel</i>{% endif %}</td>
                             <td>
-                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Link de Cadastro" href="{% url 'gestao-links-cadastro-ver' pk=link.id %}"><i class="material-icons">remove_red_eye</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger {% if link.usado %}disabled{% endif %}" data-position="top" data-tooltip="Remover Link de Cadastro" data-modal-confirm-url="{% url 'gestao-links-cadastro-remover' pk=link.id %}" href="#confirmar-exclusao"><i class="material-icons">delete</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped blue {% if link.usado %}disabled{% endif %}" data-position="top" data-tooltip="Editar Link de Cadastro" href="{% url 'gestao-links-cadastro-editar' pk=link.id %}"><i class="material-icons">edit</i></a>
+                                {% if link.usado %}
+                                    {% include 'utilidades/acoes.html' with modulo="gestao-links-cadastro" ver=False editar_disabled=True pk_registro=link.id model_name="Link de Cadastro" %}
+                                {% else %}
+                                    {% include 'utilidades/acoes.html' with modulo="gestao-links-cadastro" ver=False pk_registro=link.id model_name="Link de Cadastro" %}
+                                {% endif %}
                             </td>
                         </tr>
                     {% empty %}

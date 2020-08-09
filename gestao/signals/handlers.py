@@ -25,6 +25,7 @@ def atualiza_foto_diretorio(sender, instance, **kwargs):
         if os.path.isfile(old_file.path):
             os.remove(old_file.path)
 
+
 @receiver(signals.pre_save, sender=models.Associado)
 def atualiza_foto_associado(sender, instance, **kwargs):
     """
@@ -45,6 +46,7 @@ def atualiza_foto_associado(sender, instance, **kwargs):
         if os.path.isfile(old_file.path):
             os.remove(old_file.path)
 
+
 @receiver(signals.post_delete, sender=models.Associado)
 def deleta_foto_associado(sender, instance, **kwargs):
     """
@@ -55,6 +57,7 @@ def deleta_foto_associado(sender, instance, **kwargs):
         if os.path.isfile(instance.foto.path):
             os.remove(instance.foto.path)
 
+
 @receiver(signals.post_save, sender=models.Diretor)
 def grupo_padrao_diretor(sender, instance, **kwargs):
     grupo = Group.objects.get(pk=1)
@@ -62,6 +65,7 @@ def grupo_padrao_diretor(sender, instance, **kwargs):
         instance.groups.add(grupo)
     else:
         instance.groups.remove(grupo)
+
 
 @receiver(signals.post_save, sender=models.Aluno)
 def grupo_padrao_aluno(sender, instance, **kwargs):
@@ -71,6 +75,7 @@ def grupo_padrao_aluno(sender, instance, **kwargs):
     else:
         instance.groups.remove(grupo)
 
+
 @receiver(signals.post_save, sender=models.Egresso)
 def grupo_padrao_egresso(sender, instance, **kwargs):
     grupo = Group.objects.get(pk=3)
@@ -78,6 +83,7 @@ def grupo_padrao_egresso(sender, instance, **kwargs):
         instance.groups.add(grupo)
     else:
         instance.groups.remove(grupo)
+
 
 @receiver(signals.post_save, sender=models.Externo)
 def grupo_padrao_usuario_externo(sender, instance, **kwargs):

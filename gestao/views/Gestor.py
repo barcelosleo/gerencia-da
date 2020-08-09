@@ -8,6 +8,7 @@ from gestao import models
 
 from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin
 
+
 class LoginGestor(LoginView):
     template_name = 'gestor/login.html'
     form = AuthenticationForm
@@ -18,7 +19,8 @@ class LoginGestor(LoginView):
         try:
             diretorio = models.DiretorioAcademico.objects.get(pk=1)
             self.request.session['sigla_diretorio'] = diretorio.sigla
-            self.request.session['logo_diretorio'] = diretorio.logo.url
+            if diretorio.logo:
+                self.request.session['logo_diretorio'] = diretorio.logo.url
         except models.DiretorioAcademico.DoesNotExist:
             pass
 
@@ -27,6 +29,7 @@ class LoginGestor(LoginView):
 
 class LogoutGestor(LogoutView):
     next_page = reverse_lazy('gestao-login')
+
 
 class GestorHomeView(DetailView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'gestor/index.html'

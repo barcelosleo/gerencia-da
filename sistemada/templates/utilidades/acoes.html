@@ -1,18 +1,18 @@
 {% if ver is None or ver %}
     {% with modulo|add:"-ver" as ver_url %}
-        <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver {{ model_name|title }}" href="{% url ver_url pk=pk_registro %}"><i class="material-icons">remove_red_eye</i></a>
+        <a class="btn-floating waves-effect waves-light tooltipped {% if ver_disabled is not None and ver_disabled %}disabled{% endif %} purple" data-position="top" data-tooltip="Ver {{ model_name|title }}" href="{% url ver_url pk=pk_registro %}"><i class="material-icons">remove_red_eye</i></a>
     {% endwith %}
 {% endif %}
 
 {% if remover is None or remover %}
     {% with modulo|add:"-remover" as remover_url %}
-        <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover {{ model_name|title }}" href="#confirmar-exclusao" data-modal-confirm-url="{% url remover_url pk=pk_registro %}"><i class="material-icons">delete</i></a>
+        <a class="btn-floating waves-effect waves-light tooltipped gray {% if remover_disabled is not None and remover_disabled %}disabled{% endif %} modal-trigger" data-position="top" data-tooltip="Remover {{ model_name|title }}" href="#confirmar-exclusao" data-modal-confirm-url="{% url remover_url pk=pk_registro %}"><i class="material-icons">delete</i></a>
     {% endwith %}
 {% endif %}
 
 {% if editar is None or editar %}
     {% with modulo|add:"-editar" as editar_url %}
-        <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar {{ model_name|title }}" href="{% url editar_url pk=pk_registro %}"><i class="material-icons">edit</i></a>
+        <a class="btn-floating waves-effect waves-light tooltipped blue {% if editar_disabled is not None and editar_disabled %}disabled{% endif %}" data-position="top" data-tooltip="Editar {{ model_name|title }}" href="{% url editar_url pk=pk_registro %}"><i class="material-icons">edit</i></a>
     {% endwith %}
 {% endif %}
 

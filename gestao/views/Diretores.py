@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.db.models import Q
 
@@ -10,6 +10,7 @@ from gestao import models
 from gestao import forms
 
 from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
+
 
 class DiretorListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'diretores/index.html'
@@ -35,23 +36,26 @@ class DiretorListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
 
         return queryset
 
+
 class CriarDiretorView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'diretores/novo.html'
-    model = models.Associado
-    form_class = forms.DiretorForm
+    model = models.Diretor
+    form_class = forms.AssociadoForm
     success_url = reverse_lazy('gestao-diretores')
     permission_required = 'gestao.add_diretor'
 
     def form_valid(self, form):
         models.Diretor.objects.create(**form.cleaned_data)
-        return HttpResponseRedirect(self.success_url)
+        return redirect(self.success_url)
+
 
 class EditarDiretorView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'diretores/editar.html'
     model = models.Diretor
-    form_class = forms.DiretorCargoForm
+    form_class = forms.AssociadoForm
     success_url = reverse_lazy('gestao-diretores')
     permission_required = 'gestao.change_diretor'
+
 
 class RemoverDiretorView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     model = models.Diretor
@@ -71,6 +75,7 @@ class RemoverDiretorView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, G
 
         success_url = self.get_success_url()
         return HttpResponseRedirect(success_url)
+
 
 class VerDiretorView(DetailView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'diretores/ver.html'

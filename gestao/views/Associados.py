@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.db.models import Q
 
@@ -10,6 +11,7 @@ from gestao import forms
 
 from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
 
+
 class AssociadoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'associados/index.html'
     model = models.Associado
@@ -21,11 +23,11 @@ class AssociadoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
         queryset = models.Associado.objects.filter(
             Q(is_active=True) &
             (
-                Q(nome__startswith=termo_pesquisa) |
-                Q(sobrenome__startswith=termo_pesquisa) |
-                Q(email__startswith=termo_pesquisa) |
-                Q(telefone__startswith=termo_pesquisa) |
-                Q(matricula__startswith=termo_pesquisa)
+                    Q(nome__startswith=termo_pesquisa) |
+                    Q(sobrenome__startswith=termo_pesquisa) |
+                    Q(email__startswith=termo_pesquisa) |
+                    Q(telefone__startswith=termo_pesquisa) |
+                    Q(matricula__startswith=termo_pesquisa)
             )
         )
 
@@ -37,19 +39,26 @@ class AssociadoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
 
         return queryset
 
+
 class CriarAssociadoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'associados/novo.html'
-    model = models.Associado
+    model = models.Aluno
     form_class = forms.AssociadoForm
     success_url = reverse_lazy('gestao-associados')
     permission_required = 'gestao.add_aluno'
 
+    def form_valid(self, form):
+        models.Aluno.objects.create(**form.cleaned_data)
+        return redirect(self.success_url)
+
+
 class EditarAssociadoView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'associados/editar.html'
-    model = models.Associado
+    model = models.Aluno
     form_class = forms.AssociadoForm
     success_url = reverse_lazy('gestao-associados')
     permission_required = 'gestao.change_aluno'
+
 
 class RemoverAssociadoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     model = models.Associado
@@ -61,6 +70,7 @@ class RemoverAssociadoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin,
             return self.handle_no_permission()
 
         return self.post(request, *args, **kwargs)
+
 
 class VerAssociadoView(DetailView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'associados/ver.html'

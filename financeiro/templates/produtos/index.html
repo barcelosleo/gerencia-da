@@ -33,7 +33,13 @@
                         <tr>
                             <td>{{ produto.id }}</td>
                             <td>R$ {{ produto.preco|dinheiro }}</td>
-                            <td>{{ produto.nome }}</td>
+                            <td>
+                                {% if produto.servico %}
+                                    {{ produto.nome }}
+                                {% else %}
+                                    {{ produto.nome }} ({{ produto.estoque.quantidade }} unidades em estoque)
+                                {% endif %}
+                            </td>
                             <td>{% if produto.servico %}<i>Serviço</i>{% else %}<i>Produto</i>{% endif %}</td>
                             <td>
                                 {% include 'utilidades/acoes.html' with modulo="financeiro-produtos" pk_registro=produto.id model_name="Produto" %}

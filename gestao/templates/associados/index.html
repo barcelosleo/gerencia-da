@@ -17,21 +17,12 @@
         <div class="row">
             <h5>Associados do Diretório Acadêmico</h5>
         </div>
-        <div class="row right-align">
-            <form method="GET" class="col s6">
-                <div class="row">
-                    <div class="input-field col s10">
-                        <i class="material-icons prefix">search</i>
-                        <input type="text" id="termo-pesquisa" name="termo" value="{% if termo %}{{ termo }}{% endif %}">
-                        <label for="termo-pesquisa">Pesquisar</label>
-                    </div>
-                    <div class="input-field col s2">
-                        <button class="btn waves-effect waves-light tooltipped" data-position="right" data-tooltip="Pesquisar"><i class="material-icons">arrow_forward</i></button>
-                    </div>
-                </div>
-            </form>
-            <div class="col s6">
-                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Associado" href="{% url 'gestao-associados-novo' %}"><i class="material-icons">add</i></a>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Novo Aluno" add_url="gestao-associados-novo" %}
             </div>
         </div>
         <div class="row">
@@ -57,9 +48,7 @@
                             <td>{% if associado.telefone %}{{ associado.telefone }}{% else %}<span class="new badge red" data-badge-caption="">Sem telefone</span>{% endif %}</td>
                             <td>{% if associado.is_staff %}<i class="small material-icons">check_circle</i>{% else %}<i class="small material-icons">cancel</i>{% endif %}</td>
                             <td>
-                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Associado" href="{% url 'gestao-associados-ver' pk=associado.id %}"><i class="material-icons">remove_red_eye</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover Associado" href="#confirmar-exclusao" data-modal-confirm-url="{% url 'gestao-associados-remover' pk=associado.id %}"><i class="material-icons">delete</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Associado" href="{% url 'gestao-associados-editar' pk=associado.id %}"><i class="material-icons">edit</i></a>
+                                {% include 'utilidades/acoes.html' with modulo="gestao-associados" pk_registro=associado.id model_name="Associado" %}
                             </td>
                         </tr>
                     {% empty %}

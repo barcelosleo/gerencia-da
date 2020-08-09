@@ -4,23 +4,25 @@ from django.utils import timezone
 import material
 
 from financeiro.models import (
-        EntradaFinanceira,
-        SaidaFinanceira,
-        TransferenciaFinanceira,
-        Carteira,
-        Produto,
-        Estoque,
-        Venda,
-        VendaProduto,
-        VendaEntrada,
-    )
+    EntradaFinanceira,
+    SaidaFinanceira,
+    TransferenciaFinanceira,
+    Carteira,
+    Produto,
+    Estoque,
+    Venda,
+    VendaProduto,
+    VendaEntrada,
+)
 from gestao.models import Associado
+
 
 class EntradaFinanceiraForm(forms.ModelForm):
     descricao = forms.CharField(max_length=100, label="Descrição")
     carteira = forms.ModelChoiceField(queryset=Carteira.objects.all())
     valor = forms.CharField(widget=forms.TextInput(attrs={'class': 'mascara-dinheiro'}))
-    efetivado = forms.BooleanField(label="Efetivada", help_text="Movimentação Financeira já foi efetivada?", required=False)
+    efetivado = forms.BooleanField(label="Efetivada", help_text="Movimentação Financeira já foi efetivada?",
+                                   required=False)
 
     layout = material.Layout(
         material.Row('descricao', 'valor'),
@@ -42,7 +44,6 @@ class EntradaFinanceiraForm(forms.ModelForm):
 
         super(EntradaFinanceiraForm, self).__init__(*args, **kwargs)
 
-
     def clean_valor(self):
         """Tira formatação de moeda"""
         data = self.cleaned_data.get("valor")
@@ -56,11 +57,13 @@ class EntradaFinanceiraForm(forms.ModelForm):
         model = EntradaFinanceira
         fields = ('descricao', 'valor', 'carteira', 'data', 'efetivado')
 
+
 class SaidaFinanceiraForm(forms.ModelForm):
     descricao = forms.CharField(max_length=100, label="Descrição")
     carteira = forms.ModelChoiceField(queryset=Carteira.objects.all())
     valor = forms.CharField(widget=forms.TextInput(attrs={'class': 'mascara-dinheiro'}))
-    efetivado = forms.BooleanField(label="Efetivada", help_text="Movimentação Financeira já foi efetivada?", required=False)
+    efetivado = forms.BooleanField(label="Efetivada", help_text="Movimentação Financeira já foi efetivada?",
+                                   required=False)
 
     layout = material.Layout(
         material.Row('descricao', 'valor'),
@@ -82,7 +85,6 @@ class SaidaFinanceiraForm(forms.ModelForm):
 
         super(SaidaFinanceiraForm, self).__init__(*args, **kwargs)
 
-
     def clean_valor(self):
         """Tira formatação de moeda"""
         data = self.cleaned_data.get("valor")
@@ -96,12 +98,14 @@ class SaidaFinanceiraForm(forms.ModelForm):
         model = SaidaFinanceira
         fields = ('descricao', 'valor', 'carteira', 'data', 'efetivado')
 
+
 class TransferenciaFinanceiraForm(forms.ModelForm):
     descricao = forms.CharField(max_length=100, label="Descrição")
     carteira_origem = forms.ModelChoiceField(queryset=Carteira.objects.all())
     carteira_destino = forms.ModelChoiceField(queryset=Carteira.objects.all())
     valor = forms.CharField(widget=forms.TextInput(attrs={'class': 'mascara-dinheiro'}))
-    efetivado = forms.BooleanField(label="Efetivada", help_text="Movimentação Financeira já foi efetivada?", required=False)
+    efetivado = forms.BooleanField(label="Efetivada", help_text="Movimentação Financeira já foi efetivada?",
+                                   required=False)
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.get('instance')
@@ -135,10 +139,10 @@ class TransferenciaFinanceiraForm(forms.ModelForm):
 
         return carteira_destino
 
-
     class Meta:
         model = TransferenciaFinanceira
         fields = ('descricao', 'valor', 'carteira_origem', 'carteira_destino', 'data', 'efetivado')
+
 
 class EstoqueForm(forms.ModelForm):
     quantidade = forms.IntegerField(
@@ -155,13 +159,14 @@ class EstoqueForm(forms.ModelForm):
 
     layout = material.Layout(
         material.Fieldset('Informações de Estoque',
-            material.Row('quantidade', 'quantidade_minima', 'quantidade_encomenda')
-        ),
+                          material.Row('quantidade', 'quantidade_minima', 'quantidade_encomenda')
+                          ),
     )
 
     class Meta:
         model = Estoque
         fields = ('quantidade', 'quantidade_minima', 'quantidade_encomenda')
+
 
 class ProdutoForm(forms.ModelForm):
     preco = forms.CharField(
@@ -176,9 +181,9 @@ class ProdutoForm(forms.ModelForm):
 
     layout = material.Layout(
         material.Fieldset('Informações do Produto',
-            material.Row('nome', 'preco', 'servico'),
-            material.Row('foto')
-        ),
+                          material.Row('nome', 'preco', 'servico'),
+                          material.Row('foto')
+                          ),
     )
 
     def __init__(self, *args, **kwargs):
@@ -209,6 +214,7 @@ class ProdutoForm(forms.ModelForm):
         model = Produto
         fields = ('nome', 'preco', 'servico', 'foto')
 
+
 class VendaForm(forms.ModelForm):
     associado = forms.ModelChoiceField(queryset=Associado.objects.all().order_by('nome', 'sobrenome', 'matricula'))
     finalizada = forms.BooleanField(help_text="Venda foi concluída?", required=False)
@@ -234,7 +240,6 @@ class VendaForm(forms.ModelForm):
             self.fields['desconto'].widget.attrs['value'] = desconto
 
             if self.instance.finalizada:
-
                 self.fields['associado'].widget.attrs['disabled'] = True
                 self.fields['data'].widget.attrs['disabled'] = True
                 self.fields['finalizada'].widget.attrs['disabled'] = True
@@ -250,6 +255,10 @@ class VendaForm(forms.ModelForm):
                 return self.instance.desconto
 
         desconto = self.cleaned_data.get("desconto")
+
+        if not desconto:
+            return 0
+
         desconto = desconto.replace('R$', '')
         desconto = desconto.replace('.', '')
         desconto = desconto.replace(',', '.')
@@ -260,6 +269,7 @@ class VendaForm(forms.ModelForm):
         model = Venda
         fields = ('associado', 'data', 'finalizada', 'desconto')
 
+
 class VendaProdutoForm(forms.ModelForm):
     produto = forms.ModelChoiceField(queryset=Produto.objects.filter(arquivado=False))
     quantidade = forms.IntegerField(
@@ -269,7 +279,8 @@ class VendaProdutoForm(forms.ModelForm):
                 'class': 'quantidade-produto'
             }
         ),
-        initial=1
+        initial=1,
+        help_text="Estoque será decrementado após a geração das entradas financeiras."
     )
     adicionar = forms.CharField(
         required=False,
@@ -295,7 +306,7 @@ class VendaProdutoForm(forms.ModelForm):
             material.Field('remover'),
             material.Span3('quantidade'),
             material.Field('adicionar'),
-            material.Span2('DELETE')
+            material.Span2('DELETE'),
         )
     )
 
@@ -314,9 +325,20 @@ class VendaProdutoForm(forms.ModelForm):
 
         super(VendaProdutoForm, self).__init__(*args, **kwargs)
 
+    def clean_quantidade(self):
+        quantidade = self.cleaned_data.get('quantidade')
+        produto = self.cleaned_data.get('produto')
+
+        if not produto.servico:
+            if produto.estoque.quantidade - quantidade < 0:
+                raise forms.ValidationError(f'Produto sem estoque para esta venda! Estoque atual {produto.estoque.quantidade}')
+
+        return quantidade
+
     class Meta:
         model = VendaProduto
         fields = ('produto', 'quantidade',)
+
 
 class VendaEntradaForm(forms.ModelForm):
     carteira = forms.ModelChoiceField(queryset=Carteira.objects.all())
@@ -360,7 +382,6 @@ class VendaEntradaForm(forms.ModelForm):
                 self.fields['data'].widget.attrs['disabled'] = True
                 self.fields['data'].required = False
 
-
     def clean_data(self):
         """Tira formatação de moeda"""
         if self.instance and self.instance.pk:
@@ -402,6 +423,7 @@ class VendaEntradaForm(forms.ModelForm):
         model = VendaEntrada
         fields = ()
 
+
 class VendaEntradaInlineFormset(forms.BaseInlineFormSet):
     def clean(self):
         super(VendaEntradaInlineFormset, self).clean()
@@ -418,3 +440,24 @@ class VendaEntradaInlineFormset(forms.BaseInlineFormSet):
         if self.instance.cobranca is not None and self.instance.cobranca != total:
             raise forms.ValidationError('A soma dos valores das parcelas deve coincidir com o total a cobrar!')
 
+
+class VendaProdutoInlineFormset(forms.BaseInlineFormSet):
+    def clean(self):
+        super(VendaProdutoInlineFormset, self).clean()
+
+        produtos = {}
+
+        for form in self.forms:
+            if not form.is_valid():
+                return
+
+            produto = form.cleaned_data.get('produto')
+
+            if not produto.servico:
+                if produto.pk not in produtos:
+                    produtos[produto.pk] = 0
+
+                produtos[produto.pk] += form.cleaned_data.get('quantidade')
+
+                if produto.estoque.quantidade - produtos[produto.pk] < 0:
+                    raise forms.ValidationError(f"O produto {produto.nome} não tem estoque suficiente para esta venda! Estoque atual {produto.estoque.quantidade}")

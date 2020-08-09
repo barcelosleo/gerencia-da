@@ -17,21 +17,12 @@
         <div class="row">
             <h5>Egressos do Curso</h5>
         </div>
-        <div class="row right-align">
-            <form method="GET" class="col s6">
-                <div class="row">
-                    <div class="input-field col s10">
-                        <i class="material-icons prefix">search</i>
-                        <input type="text" id="termo-pesquisa" name="termo" value="{% if termo %}{{ termo }}{% endif %}">
-                        <label for="termo-pesquisa">Pesquisar</label>
-                    </div>
-                    <div class="input-field col s2">
-                        <button class="btn waves-effect waves-light tooltipped" data-position="right" data-tooltip="Pesquisar"><i class="material-icons">arrow_forward</i></button>
-                    </div>
-                </div>
-            </form>
-            <div class="col s6">
-                <a class="btn-floating btn-large waves-effect waves-light tooltipped red" data-position="left" data-tooltip="Novo Egresso" href="{% url 'gestao-egressos-novo' %}"><i class="material-icons">add</i></a>
+        <div class="row">
+            <div class="col s10">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+            <div class="col s2">
+                {% include 'utilidades/botao_add.html' with tooltip="Novo Egresso" add_url="gestao-egressos-novo" %}
             </div>
         </div>
         <div class="row">
@@ -55,9 +46,7 @@
                             <td>{{ egresso.email }}</td>
                             <td>{% if egresso.telefone %}{{ egresso.telefone }}{% else %}<span class="new badge red" data-badge-caption="">Sem telefone</span>{% endif %}</td>
                             <td>
-                                <a class="btn-floating waves-effect waves-light tooltipped purple" data-position="top" data-tooltip="Ver Egresso" href="{% url 'gestao-egressos-ver' pk=egresso.id %}"><i class="material-icons">remove_red_eye</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped gray modal-trigger" data-position="top" data-tooltip="Remover Egresso" href="#confirmar-exclusao" data-modal-confirm-url="{% url 'gestao-egressos-remover' pk=egresso.id %}"><i class="material-icons">delete</i></a>
-                                <a class="btn-floating waves-effect waves-light tooltipped blue" data-position="top" data-tooltip="Editar Egresso" href="{% url 'gestao-egressos-editar' pk=egresso.id %}"><i class="material-icons">edit</i></a>
+                                {% include 'utilidades/acoes.html' with modulo="gestao-egressos" pk_registro=egresso.id model_name="Egresso" %}
                             </td>
                         </tr>
                     {% empty %}

@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 from django.db.models import Q
 
 from django.views.generic.list import ListView
@@ -9,6 +10,7 @@ from gestao import models
 from gestao import forms
 
 from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
+
 
 class EgressoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'egressos/index.html'
@@ -34,6 +36,7 @@ class EgressoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
 
         return queryset
 
+
 class CriarEgressoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'egressos/novo.html'
     model = models.Egresso
@@ -42,8 +45,9 @@ class CriarEgressoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, Ges
     permission_required = 'gestao.add_egresso'
 
     def form_valid(self, form):
-        self.object = self.model.objects.create(**form.cleaned_data)
-        return super().form_valid(form)
+        self.model.objects.create(**form.cleaned_data)
+        return redirect(self.success_url)
+
 
 class EditarEgressoView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'egressos/editar.html'
@@ -51,6 +55,7 @@ class EditarEgressoView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, Ge
     form_class = forms.EgressoForm
     success_url = reverse_lazy('gestao-egressos')
     permission_required = 'gestao.change_egresso'
+
 
 class RemoverEgressoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     model = models.Egresso
@@ -62,6 +67,7 @@ class RemoverEgressoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, G
             return self.handle_no_permission()
 
         return self.post(request, *args, **kwargs)
+
 
 class VerEgressoView(DetailView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'egressos/ver.html'

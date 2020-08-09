@@ -10,11 +10,12 @@ from financeiro.mixins import FinanceiroMixin, FinanceiroProtegidoMixin
 from financeiro.models import EntradaFinanceira
 from financeiro.forms import EntradaFinanceiraForm
 
+
 class ListEntradaFinanceiraView(ListView, FinanceiroMixin):
     template_name = 'entradas/index.html'
     model = EntradaFinanceira
     paginate_by = 5
-    ordering = ('id', )
+    ordering = ('id',)
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
@@ -30,12 +31,14 @@ class ListEntradaFinanceiraView(ListView, FinanceiroMixin):
 
         return queryset
 
+
 class CriarEntradaFinanceiraView(CreateView, FinanceiroProtegidoMixin):
     template_name = "entradas/form.html"
     model = EntradaFinanceira
     success_url = reverse_lazy('financeiro-entradas')
     permission_required = 'financeiro.add_entradafinanceira'
     form_class = EntradaFinanceiraForm
+
 
 class EditarEntradaFinanceiraView(UpdateView, FinanceiroProtegidoMixin):
     template_name = "entradas/form.html"
@@ -60,6 +63,7 @@ class RemoverEntradaFinanceiraView(DeleteView, FinanceiroProtegidoMixin):
             return self.handle_no_permission()
 
         return self.post(request, *args, **kwargs)
+
 
 class VerEntradaFinanceiraView(DetailView, FinanceiroProtegidoMixin):
     template_name = "entradas/ver.html"

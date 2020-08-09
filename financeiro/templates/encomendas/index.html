@@ -1,0 +1,64 @@
+{% extends 'layouts/gestao.html' %}
+
+{% load numeros %}
+
+{% block conteudo_gestao %}
+    {% include 'utilidades/modal_confirmacao.html' with nome_model="Encomenda" %}
+
+    <div class="col s12">
+        <div class="row">
+            <h5>Encomendas do Diretório Acadêmico</h5>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                {% include 'utilidades/pesquisa.html' %}
+            </div>
+        </div>
+        <div class="row">
+            <table class="responsive-table highlight col s12">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Associado</th>
+                        <th>Produtos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for encomenda in encomenda_list %}
+                        <tr>
+                            <td>{{ encomenda.id }}</td>
+                            <td>{{ encomenda.data|date:'d/m/Y' }}</td>
+                            <td>{{ encomenda.data_fim|date:'d/m/Y' }}</td>
+                            <td>
+                                {% for produto in encomenda.produtos.all %}
+                                    {{ produto }} {% if not forloop.last %},{% endif %}
+                                {% endfor %}
+
+                            </td>
+                            <td>{% if encomenda.ativa %}<i class="small material-icons">check_circle</i>{% else %}<i class="small material-icons">cancel</i>{% endif %}</td>
+                            <td>
+                                {% include 'utilidades/acoes.html' with modulo="financeiro-encomendas" editar=False pk_registro=encomenda.id model_name="Encomenda" %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4">
+                                <div class="center-align">
+                                    <i>Nenhuma temporada de encomenda cadastrada</i>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row center-align">
+            {% include 'utilidades/paginacao.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'utilidades/modal_confirmacao_script.html' %}
+{% endblock %}

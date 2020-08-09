@@ -3,13 +3,13 @@ from django.db.models import Q
 
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.detail import DetailView
 
 from django.contrib.auth.models import Group
 from django.conf import settings
 
 from gestao import forms
 from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
+
 
 class GrupoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'grupos/index.html'
@@ -36,6 +36,7 @@ class GrupoListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
 
         return queryset
 
+
 class CriarGrupoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'grupos/novo.html'
     model = Group
@@ -43,12 +44,14 @@ class CriarGrupoView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, Gesta
     success_url = reverse_lazy('gestao-grupos')
     permission_required = 'auth.create_group'
 
+
 class EditarGrupoView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'grupos/editar.html'
     model = Group
     form_class = forms.GrupoForm
     success_url = reverse_lazy('gestao-grupos')
     permission_required = 'auth.change_group'
+
 
 class RemoverGrupoView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     model = Group

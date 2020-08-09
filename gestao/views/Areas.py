@@ -9,6 +9,7 @@ from gestao import forms
 
 from gestao.mixins import GestaoRegrasMixin, GestaoContextMixin, GestaoPermissoesMixin
 
+
 class AreaListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
     template_name = 'areas/index.html'
     model = models.Area
@@ -17,7 +18,8 @@ class AreaListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
-        queryset = models.Area.objects.filter(Q(nome__startswith=termo_pesquisa) | Q(gestor__nome__startswith=termo_pesquisa))
+        queryset = models.Area.objects.filter(
+            Q(nome__startswith=termo_pesquisa) | Q(gestor__nome__startswith=termo_pesquisa))
 
         ordering = self.get_ordering()
         if ordering:
@@ -27,6 +29,7 @@ class AreaListView(ListView, GestaoRegrasMixin, GestaoContextMixin):
 
         return queryset
 
+
 class CriarAreaView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'areas/nova.html'
     model = models.Area
@@ -34,12 +37,14 @@ class CriarAreaView(CreateView, GestaoRegrasMixin, GestaoPermissoesMixin, Gestao
     success_url = reverse_lazy('gestao-areas')
     permission_required = 'gestao.add_area'
 
+
 class EditarAreaView(UpdateView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     template_name = 'areas/editar.html'
     model = models.Area
     form_class = forms.AreaForm
     success_url = reverse_lazy('gestao-areas')
     permission_required = 'gestao.change_area'
+
 
 class RemoverAreaView(DeleteView, GestaoRegrasMixin, GestaoPermissoesMixin, GestaoContextMixin):
     model = models.Area

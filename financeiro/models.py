@@ -1,10 +1,13 @@
 from django.db import models
 from django.utils import timezone
+from django.shortcuts import reverse
 from datetime import timedelta
 import uuid
 
+
 def mais_d():
     return timezone.now() + timedelta(days=7)
+
 
 class Carteira(models.Model):
     nome = models.CharField(max_length=50)
@@ -59,12 +62,30 @@ class EntradaFinanceira(models.Model):
     data = models.DateField(default=timezone.now)
     efetivado = models.BooleanField(default=False)
 
+    @property
+    def e_venda(self):
+        return self.venda_entrada is not None
+
+    @property
+    def venda_entrada(self):
+        return VendaEntrada.objects.get(entrada=self)
+
+    @property
+    def descricao_para_venda(self):
+        if not self.e_venda:
+            return ""
+
+        link = reverse('financeiro-vendas-parcelas', kwargs={'pk': self.venda_entrada.venda.pk})
+        return self.descricao.replace(f"Venda({self.venda_entrada.venda.codigo})", f"<a href='{link}'>Venda</a>")
+
+
 class SaidaFinanceira(models.Model):
     valor = models.FloatField()
     carteira = models.ForeignKey(Carteira, on_delete=models.PROTECT)
     descricao = models.CharField(max_length=100)
     data = models.DateField(default=timezone.now)
     efetivado = models.BooleanField(default=False)
+
 
 class TransferenciaFinanceira(models.Model):
     valor = models.FloatField()
@@ -82,6 +103,7 @@ class TransferenciaFinanceira(models.Model):
         on_delete=models.PROTECT
     )
 
+
 class Produto(models.Model):
     nome = models.CharField(max_length=100)
     preco = models.FloatField()
@@ -96,11 +118,13 @@ class Produto(models.Model):
         preco = preco.replace('v', '.')
         return f"R$ {preco} - {self.nome}"
 
+
 class Estoque(models.Model):
     produto = models.OneToOneField(Produto, on_delete=models.CASCADE, primary_key=True)
     quantidade = models.PositiveIntegerField()
     quantidade_minima = models.PositiveIntegerField(default=0)
     quantidade_encomenda = models.PositiveIntegerField()
+
 
 class Venda(models.Model):
     associado = models.ForeignKey("gestao.Associado", on_delete=models.PROTECT, null=True)
@@ -127,6 +151,7 @@ class Venda(models.Model):
     def cobranca(self):
         return self.total - self.desconto
 
+
 class VendaProduto(models.Model):
     produto = models.ForeignKey(Produto, on_delete=models.PROTECT)
     venda = models.ForeignKey(Venda, on_delete=models.CASCADE)
@@ -136,30 +161,33 @@ class VendaProduto(models.Model):
     def total(self):
         return self.produto.preco * self.quantidade
 
+
 class VendaEntrada(models.Model):
     venda = models.ForeignKey(Venda, on_delete=models.CASCADE)
     entrada = models.ForeignKey(EntradaFinanceira, on_delete=models.CASCADE)
 
+
 class ReciboPagamento(models.Model):
-    data = models.DateField(auto_now=True)
+    data = models.DateField(default=timezone.now)
     entrada = models.ForeignKey(EntradaFinanceira, on_delete=models.CASCADE)
     associado = models.ForeignKey("gestao.Associado", on_delete=models.CASCADE)
 
+
 class TemporadaEncomenda(models.Model):
-    data = models.DateField(auto_now=True)
+    data = models.DateField(default=timezone.now)
     data_fim = models.DateField(default=mais_d)
     produtos = models.ManyToManyField(Produto, related_name="temporadas_encomenda")
     ativa = models.BooleanField(default=True)
 
+
 class Encomenda(models.Model):
-    data = models.DateTimeField(auto_now=True)
-    associado = models.ForeignKey("gestao.Associado", on_delete=models.CASCADE)
+    data = models.DateTimeField(default=timezone.now)
+    associado = models.ForeignKey("gestao.Associado", on_delete=models.CASCADE, null=True, blank=True)
     temporada_encomenda = models.ForeignKey(TemporadaEncomenda, on_delete=models.PROTECT)
-    total = models.FloatField(default=0)
     produtos = models.ManyToManyField(Produto, through="EncomendaProduto")
+
 
 class EncomendaProduto(models.Model):
     produto = models.ForeignKey(Produto, on_delete=models.PROTECT)
     encomenda = models.ForeignKey(Encomenda, on_delete=models.CASCADE)
     quantidade = models.IntegerField(default=1)
-    total = models.FloatField(default=0)

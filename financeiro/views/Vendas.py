@@ -11,13 +11,14 @@ from django.views.generic.detail import DetailView
 from financeiro.mixins import FinanceiroMixin, FinanceiroProtegidoMixin
 
 from financeiro.models import Venda, VendaProduto, VendaEntrada, EntradaFinanceira
-from financeiro.forms import VendaForm, VendaProdutoForm, VendaEntradaForm, VendaEntradaInlineFormset
+from financeiro.forms import VendaForm, VendaProdutoForm, VendaEntradaForm, VendaEntradaInlineFormset, VendaProdutoInlineFormset
+
 
 class ListVendaView(ListView, FinanceiroMixin):
     template_name = 'vendas/index.html'
     model = Venda
     paginate_by = 5
-    ordering = ('id', )
+    ordering = ('id',)
 
     def get_queryset(self):
         termo_pesquisa = self.request.GET.get('termo', '')
@@ -33,6 +34,7 @@ class ListVendaView(ListView, FinanceiroMixin):
 
         return queryset
 
+
 class CriarVendaView(CreateView, FinanceiroProtegidoMixin):
     template_name = "vendas/form.html"
     model = Venda
@@ -43,6 +45,7 @@ class CriarVendaView(CreateView, FinanceiroProtegidoMixin):
         Venda,
         VendaProduto,
         form=VendaProdutoForm,
+        formset=VendaProdutoInlineFormset,
         extra=0,
         can_delete=False,
         min_num=1,
@@ -71,6 +74,7 @@ class CriarVendaView(CreateView, FinanceiroProtegidoMixin):
         context['venda_produto_formset'] = formset_produtos
 
         return self.render_to_response(context)
+
 
 class EditarVendaView(UpdateView, FinanceiroProtegidoMixin):
     template_name = "vendas/form.html"
@@ -146,10 +150,12 @@ class RemoverVendaView(DeleteView, FinanceiroProtegidoMixin):
 
         return HttpResponseRedirect(success_url)
 
+
 class VerVendaView(DetailView, FinanceiroProtegidoMixin):
     template_name = "vendas/ver.html"
     model = Venda
     permission_required = 'financeiro.view_venda'
+
 
 class ParcelasVenda(FormView, FinanceiroProtegidoMixin):
     template_name = "vendas/parcelas.html"
@@ -180,7 +186,9 @@ class ParcelasVenda(FormView, FinanceiroProtegidoMixin):
             if form.instance.entrada.efetivado:
                 form.fields['data'].widget.attrs['value'] = form.fields['data'].initial.strftime('%d/%m/%Y')
                 form.fields['valor'].widget.attrs['value'] = form.fields['valor'].initial
-                form.fields['carteira'].choices = [form.fields['carteira'].choices.choice(form.cleaned_data['carteira'])]
+                form.fields['carteira'].choices = [
+                    form.fields['carteira'].choices.choice(form.cleaned_data['carteira'])
+                ]
                 form.fields['efetivado'].widget.attrs['checked'] = 'checked'
 
         context['form'] = forms
@@ -194,6 +202,8 @@ class ParcelasVenda(FormView, FinanceiroProtegidoMixin):
 
         i = 1
         n_parcelas = len(forms)
+
+        decrementar_estoque = False
 
         for form in forms:
             parcela = form.save(commit=False)
@@ -211,6 +221,7 @@ class ParcelasVenda(FormView, FinanceiroProtegidoMixin):
                     entrada.save()
 
             else:
+                decrementar_estoque = True
                 entrada = EntradaFinanceira.objects.create(
                     valor=form.cleaned_data.get('valor'),
                     carteira=form.cleaned_data.get('carteira'),
@@ -228,6 +239,12 @@ class ParcelasVenda(FormView, FinanceiroProtegidoMixin):
         if finalizada:
             venda.finalizada = True
             venda.save()
+
+        # Caso as parcelas estejam sendo criadas, o estoque é decrementado visto que não é mais possível alterar a venda
+        if decrementar_estoque:
+            for venda_produto in venda.venda_produtos.filter(produto__servico=False):
+                venda_produto.produto.estoque.quantidade -= venda_produto.quantidade
+                venda_produto.produto.estoque.save()
 
         return redirect('financeiro-vendas')
 
